@@ -1,0 +1,137 @@
+*{
+  overflow-x: clip;
+}
+.landingPageContainer {
+  height: 80vh;
+  width: 100vw;
+  background-color: #000; /* Dark background */
+  background-image: url("../public/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  color: white; /* Ensure all text stands out against dark background */
+}
+
+/* Navbar Styles */
+.navBar {
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background-color: rgb(0, 0, 0); /* Slightly transparent dark background */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4); /* Subtle shadow for depth */
+  position: fixed;
+  top: 0;
+  height: 6rem;
+  z-index: 10;
+}
+
+.landingPageLogo h2 {
+  color: #FFC107; /* Golden color for branding consistency */
+  font-size: 1.8rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+/* Navigation Options */
+.navOptions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #FFC107; /* Golden hover effect */
+}
+
+/* Button Styles */
+.login-button,.getStarted-button,.logout-button {
+  background-color: gold;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.getStarted-button{
+  width: 10vw;
+  margin-top: 1.2rem;
+}
+
+.login-button,.getStarted-button :hover {
+  background-color: #ffd700; /* Darker shade of gold for hover effect */
+}
+
+.mainContent{
+  margin-top: 6rem;
+}
+
+
+.landingPageMain {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem 2rem; /* Adjusted padding for navbar */
+}
+
+.getStarted {
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  gap: 0.8rem;
+  color: white;
+  padding-left: 1rem;
+}
+
+.getStarted span {
+  color: #FFC107; /* Golden for highlights */
+}
+
+.getStarted h1 {
+  font-size: 4rem;
+}
+
+.getStarted p {
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  color: #aaa; /* Muted white for less emphasis */
+}
+
+/* Landing Page Image */
+.landingPageImage {
+  width: 50vw;
+  display: flex;
+  justify-content: center;
+}
+
+.landingPageImage img {
+  width: 25vw;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); /* Subtle shadow around the image */
+}
+
+.meetContainer{
+  display: flex;
+  height: 63vh;
+  padding-inline: 20px;
+  gap: 10vw;
+  justify-content: center;
+  margin-top: 10rem;
+}
+
+.leftPanel{
+  display: flex;
+  align-items:center;
+}
+
