@@ -27,6 +27,7 @@ function History() {
                 minHeight: '100vh',
                 padding: '20px',
                 fontFamily: "'Roboto', sans-serif",
+                marginTop:"8rem"
             }}
         >
             <h1
