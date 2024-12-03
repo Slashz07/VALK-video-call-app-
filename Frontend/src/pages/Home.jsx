@@ -4,6 +4,7 @@ import CheckAuth from '../Utils/CheckAuth'
 import { useNavigate } from 'react-router-dom'
 import { Button, TextField } from '@mui/material'
 import { AuthContext } from '../context/AuthContext'
+import NavigationBar from '../Utils/NavigationBar.jsx'
 
 function Home(props) {
 
@@ -20,6 +21,8 @@ function Home(props) {
   }
 
   return (
+    <>
+    <NavigationBar/>
     <div className='meetContainer'>
       <div className='leftPanel'>
         <div>
@@ -48,6 +51,8 @@ function Home(props) {
         <img src="../../home.svg" alt="" />
       </div>
     </div>
+    </>
+    
   )
 }
 

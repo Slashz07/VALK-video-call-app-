@@ -81,6 +81,7 @@ export const connectToSocket = (server) => {
         })
 
         socket.on("disconnect", () => {
+            console.log("disconnect ran")
 
             let diffTime = Math.abs(timeOnline[socket.id] - new Date())
 

@@ -5,7 +5,9 @@ import NavigationBar from '../Utils/NavigationBar';
 
 function LandingPage() {
   return (
-    <div className='landingPageContainer'>
+    <>
+    <NavigationBar/>
+      <div className='landingPageContainer'>
       <div className='landingPageMain'>
           <div className='getStarted'>
              <h1><span>Connect</span> with your <br/> Loved ones</h1>
@@ -17,6 +19,8 @@ function LandingPage() {
           </div>
       </div>
     </div>
+    </>
+  
   )
 }
 

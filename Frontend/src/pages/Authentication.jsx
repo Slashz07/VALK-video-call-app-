@@ -15,6 +15,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import "../App.css"
+import NavigationBar from '../Utils/NavigationBar.jsx';
 
 const defaultTheme = createTheme();
 
@@ -59,8 +61,10 @@ export default function Authentication() {
   }
 
   return (
+    <>
+    <NavigationBar/>
     <ThemeProvider theme={defaultTheme}>
-      <Grid container component="main" sx={{ height: '100vh' }}>
+      <Grid container component="main" sx={{ height: '89vh' }}>
         <CssBaseline />
         <Grid
           item
@@ -183,5 +187,7 @@ export default function Authentication() {
         />}
 
     </ThemeProvider>
+    </>
+   
   );
 }

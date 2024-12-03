@@ -1,6 +1,5 @@
 import './App.css'
 import { Outlet } from 'react-router-dom'
-import NavigationBar from './Utils/NavigationBar'
 import Footer from './Utils/Footer'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from './context/AuthContext'
@@ -29,7 +28,6 @@ function App() {
 
   return (
     <div className='mainContainer'>
-      <NavigationBar />
       <div className='mainContent'>
       {console.log(loading)}
       {

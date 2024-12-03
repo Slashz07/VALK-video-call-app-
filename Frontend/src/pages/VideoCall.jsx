@@ -13,6 +13,7 @@ import VideoOnIcon from '@mui/icons-material/Videocam';
 import VideoOffIcon from '@mui/icons-material/VideocamOff'
 import { useNavigate } from 'react-router-dom';
 import CheckAuth from '../Utils/CheckAuth';
+import NavigationBar from '../Utils/NavigationBar';
 
 const server_url = "http://localhost:5005"
 
@@ -52,7 +53,7 @@ function VideoCall() {
 
   const [videoPermission, setVideoPermission] = useState(false)
   const [audioPermission, setAudioPermission] = useState(false)
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
 
 
@@ -333,6 +334,7 @@ function VideoCall() {
       socketRef.current.on("chat-message", addMessage)
 
       socketRef.current.on("user-left", (id) => {
+        console.log("user left ran")
         setAllVideos((userVideos) => userVideos.filter((userVideo) => userVideo.socketId !== id))
       })
       const receivedTracks = {};
@@ -588,13 +590,19 @@ function VideoCall() {
     setMessage("")
   }
 
-  const endCall=()=>{
-   try {
-     localVideoRef.current.getTracks().forEach((track)=>track.stop())
-   } catch (error) {
-    console.log(error)
-   }
-   navigate("/home")
+  const endCall = () => {
+    try {
+      const streamTracks=window.localStream.getTracks()
+      streamTracks.forEach((track)=>track.stop())
+      
+      const userTracks=localVideoRef.current.srcObject.getTracks()
+      userTracks && userTracks.forEach((track) => track.stop())
+
+      socketRef.current.disconnect()
+    } catch (error) {
+      console.log(error)
+    }
+    navigate("/home")
   }
 
   // useEffect(() => {
@@ -627,6 +635,7 @@ function VideoCall() {
     <div>
       {askUsername === true ? (
         <div>
+          <NavigationBar />
           <h2>Enter into lobby</h2>
           <div className='setGuestName'>
             <TextField id="outlined-basic" label="Outlined" variant="outlined" onChange={(event) => setUsername(event.target.value)} />
@@ -641,7 +650,6 @@ function VideoCall() {
         </div>
       ) :
         <div className='meetingVideoContainer'>
-
           {showModal ?
             <div className='chatRoom'>
               <div className='chatContainer'>
@@ -681,8 +689,8 @@ function VideoCall() {
                             />}
                           </div>
                       ))
-                    ):<>
-                    <h2>No messages yet!</h2>
+                    ) : <>
+                      <h2>No messages yet!</h2>
                     </>
 
                   }
@@ -712,7 +720,7 @@ function VideoCall() {
             <IconButton onClick={() => setVideo((currVideo) => !currVideo)} style={{ color: "white" }}>
               {video ? <VideoOnIcon /> : <VideoOffIcon />}
             </IconButton>
-            <IconButton onClick={()=>endCall()} style={{ color: "red" }}>
+            <IconButton onClick={() => endCall()} style={{ color: "red" }}>
               {<CallEndIcon />}
             </IconButton>
             <IconButton onClick={() => setAudio((currAudio) => !currAudio)} style={{ color: "white" }}>

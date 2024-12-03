@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { Card, CardContent, Typography, Button } from '@mui/material';
+import NavigationBar from '../Utils/NavigationBar';
 
 function History() {
     const { getHistory } = useContext(AuthContext);
@@ -17,7 +18,9 @@ function History() {
     }, []);
 
     return (
-        <div
+        <>
+      <NavigationBar/>
+      <div
             style={{
                 backgroundColor: '#f4f4f9', // Light grayish background for a neutral feel
                 color: '#333', // Dark gray for text
@@ -112,6 +115,7 @@ function History() {
                 )}
             </div>
         </div>
+      </>
     );
 }
 
