@@ -63,7 +63,8 @@ export default function Authentication() {
   return (
     <>
     <NavigationBar/>
-    <ThemeProvider theme={defaultTheme}>
+    <div style={{marginTop:"7vh"}}>
+    <ThemeProvider  theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '89vh' }}>
         <CssBaseline />
         <Grid
@@ -187,7 +188,8 @@ export default function Authentication() {
         />}
 
     </ThemeProvider>
+    
+    </div>
     </>
-   
   );
 }
