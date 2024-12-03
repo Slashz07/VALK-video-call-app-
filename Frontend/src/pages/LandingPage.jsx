@@ -12,7 +12,9 @@ function LandingPage() {
           <div className='getStarted'>
              <h1><span>Connect</span> with your <br/> Loved ones</h1>
              <p>Cover the distance with VALK</p>
+             <Link to={"/signIn"}>
              <button className='getStarted-button'>Get Started</button>
+             </Link>
           </div>
           <div className='landingPageImage'>
               <img src="../../public/mobile.png" alt="" />
