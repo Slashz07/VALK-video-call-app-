@@ -1,88 +1,110 @@
-/* General app styling */
+/* Call LOBBY styling---->*/
+
+/* General styling */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #1c1c1c; /* Dark background */
-    color: #ffffff; /* White text */
-}
+    background-color: #ffffff; /* White background */
+    color: #333333; /* Dark text for contrast */
+  }
+  
+  /* Video app container */
+  .video-app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #ffffff;
+  }
 
-/* Video call app container */
-.video-app {
+  .lobby-container-parent{
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 1200px;
+    height: 80%;
+    padding: 20px;
+    margin-top: 5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    text-align: center;
-}
+  }
 
-/* AppBar styling */
-.app-bar {
-    background-color: #000000; /* Black navbar */
-}
-
-/* Lobby container */
-.lobby-container {
-    padding: 30px;
-    border-radius: 10px;
-    background-color: #262626; /* Darker container for contrast */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Title styling */
-.title {
-    font-size: 2rem;
+  .lobby-title {
     margin-bottom: 20px;
-    font-weight: bold;
-    color: #ffffff;
-}
-
-/* Set guest name input container */
-.set-guest-name {
+    font-weight:700;
+    font-size: 2rem;
+    color: #FFC107;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    /* flex-grow: 1; */
+  }
+  
+  /* Lobby container */
+  .lobby-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    width: 95%;
+    background-color: #ffffff;
+  }
+  
+  /* Lobby header section */
+  .lobby-header {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 45%;
+  }
+  
+  
+  
+  .set-guest-name {
+    display: flex;
+   justify-content: center;
+    align-items: center;
     gap: 15px;
-    margin-bottom: 30px;
-}
-
-/* TextField */
-.MuiInputBase-root {
-    background-color: #333333; /* Input box background */
-    border-radius: 5px;
+    width: 100%;
+  }
+  
+  .connect-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff; /* Primary button color */
     color: #ffffff;
-}
-
-.MuiInputLabel-root {
-    color: #888888; /* Input label */
-}
-
-.MuiInputBase-input {
-    color: #ffffff;
-}
-
-/* Button */
-.MuiButton-contained {
-    background-color: #ffffff; /* White button */
-    color: #000000; /* Black text */
-}
-
-.MuiButton-contained:hover {
-    background-color: #e0e0e0; /* Light gray hover */
-}
-
-/* Video frame */
-video {
-    border: 2px solid #ffffff; /* White border */
-    border-radius: 10px;
-    width: 80%;
-    max-width: 600px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  .connect-button:hover {
+    background-color: #0056b3; /* Darker blue for hover */
+  }
+  
+  /* Video preview section */
+  .video-preview {
+    width: 55%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .local-video {
+    width: 100%;
     height: auto;
-    margin-top: 20px;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
-}
+    max-width: 566px;
+    border: 2px solid #333333;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
 
+
+/* Video call styling-----> */
 /* Meeting video container */
 .meetingVideoContainer {
     display: flex;
@@ -95,49 +117,64 @@ video {
 }
 
 /* Chat room container */
-.chatRoom {
-    flex-basis: 25%;
-    height: 100%;
-    background-color: #262626;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-.chatContainer {
-    flex: 1;
-}
-
-.messageBox {
-    flex: 1;
-    overflow-y: auto;
-    background-color: #1c1c1c;
-    border: 1px solid #444;
-    border-radius: 5px;
-    padding: 10px;
-}
-
-.userChat {
-    text-align: left;
-    margin-bottom: 10px;
-}
-
-.myChat {
-    text-align: right;
-    margin-bottom: 10px;
-}
-
-.userMessage, .myMessage {
-    background-color: #333333;
+.chatRoom{
+    height: 90vh;
+    position: absolute;
+    width: 30vw;
+    right: 0;
+    background-color: white;
     border-radius: 10px;
-    color: #ffffff;
+    padding-inline: 20px;
+    z-index: 10;
 }
 
-.chatArea {
-    display: flex;
-    gap: 10px;
+.chatContainer{
+    position: relative;
+    height: 100%;
+    overflow-y: scroll;
 }
+
+.messageBox{
+    overflow-y: scroll;
+    height: 90%;
+    padding-bottom:4rem ;
+}
+
+.chatArea{
+    position: absolute;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    bottom: 0;
+    width:90%;
+    background-color: white;
+    z-index: 10;
+}
+
+
+.myChat{
+    text-align: end;
+}
+
+.myMessage {
+    background-color: #daf8e3; /* Light green */
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+
+
+  }
+  
+  .userMessage {
+    background-color: #f1f0f0; /* Light grey */
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+  }
+
+  .enterMsgField{
+    width: 70%;
+  }
 
 /* Video grid */
 .videoGrid {
@@ -160,21 +197,42 @@ video {
     border-radius: 10px;
     object-fit: cover;
 }
-
-.userVideoFrame video {
-    width: 300px;
-    height: 200px;
-    border: 2px solid white;
-    border-radius: 10px;
-    object-fit: cover;
-}
+/* Container for user videos */
+.userVideos {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to new rows */
+    justify-content: center; /* Center the videos on the screen */
+    gap: 20px; /* Spacing between videos */
+    width: 100%;
+    padding: 10px;
+  }
+  
+  /* Individual video frame */
+  .userVideoFrame {
+    flex: 1 1 45%; /* Ensure at most 2 videos fit per row */
+    max-width: 45%; /* Prevent videos from exceeding 2 per row */
+    aspect-ratio: 16 / 9; /* Maintain a consistent aspect ratio */
+    position: relative;
+  }
+  
+  .userVideoFrame video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the video fits nicely */
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
 
 /* Button container */
 .buttonContainer {
     position: absolute;
     bottom: 2%;
     left: 50%;
-    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    transform: translateX(-7%);
     display: flex;
     gap: 15px;
 }
