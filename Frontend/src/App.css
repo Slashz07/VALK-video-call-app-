@@ -2,7 +2,7 @@
   overflow-x: clip;
 }
 .landingPageContainer {
-  height: 80vh;
+  height: 93vh;
   width: 100vw;
   background-color: #000; /* Dark background */
   background-image: url("../public/background.png");
