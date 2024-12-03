@@ -11,7 +11,7 @@ import ChatIcon from '@mui/icons-material/Chat'
 import VideoOnIcon from '@mui/icons-material/Videocam';
 import VideoOffIcon from '@mui/icons-material/VideocamOff'
 import { useNavigate } from 'react-router-dom';
-import { TextField, AppBar, Toolbar, Typography, IconButton, Badge } from '@mui/material';
+import { TextField, Typography, IconButton, Badge } from '@mui/material';
 import NavigationBar from '../Utils/NavigationBar';
 
 const server_url = "http://localhost:5005"
@@ -52,40 +52,22 @@ function VideoCall() {
 
   const [videoPermission, setVideoPermission] = useState(false)
   const [audioPermission, setAudioPermission] = useState(false)
+  const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
   const navigate = useNavigate()
 
 
+  useEffect(() => {
+    const userCount = allVideos.length;
 
-  // const handleDevices = async () => {
-  //   try {
-  //     const inputDevices = await navigator.mediaDevices.enumerateDevices()
-  //     const cameraAvail = inputDevices.filter((device) => device.kind === "videoinput")
-  //     const audioAvail = inputDevices.filter((device) => device.kind === "audioinput")
+    if (userCount === 1) {
+      setVideoSize({ maxWidth: '45%' }); // Larger for a single user
+    } else if (userCount === 2) {
+      setVideoSize({ maxWidth: '35%' }); // Fit two users perfectly
+    } else if (userCount > 2) {
+      setVideoSize({ maxWidth: '30%' }); // Enforce same size for more users
+    }
+  }, [allVideos.length]);
 
-  //     if (cameraAvail.length > 0) {
-  //       const videoPermit = await navigator.mediaDevices.getUserMedia({ video: true })
-  //       setVideoPermission(videoPermit)
-  //       setVideoAvailable(true)
-  //     } else {
-  //       let videoTracks = localVideoRef.current.srcObject.getVideoTracks()
-  //       videoTracks.forEach((track) => {
-  //         track.stop()
-  //       })
-  //     }
-  //     if (audioAvail) {
-  //       const audioPermit = await navigator.mediaDevices.getUserMedia({ audio: true })
-  //       setAudioPermission(audioPermit)
-  //       setAudioAvailable(true)
-  //     } else {
-  //       let audioTracks = localVideoRef.current.srcObject.getAudioTracks()
-  //       audioTracks.forEach((track) => {
-  //         track.stop()
-  //       })
-  //     }
-  //   } catch (error) {
-
-  //   }
-  // }
 
   const configurations = async () => {
 
@@ -429,20 +411,7 @@ function VideoCall() {
             if (id2 === socketIdRef.current) {
               continue
             }
-            try {
-              // connections[id2].addStream(window.localStream)
 
-
-              // if (window.localStream) {
-              //   // Add all tracks from the local stream to the peer connection
-              //   window.localStream.getTracks().forEach((track) => {
-              //     connections[id2].addTrack(track, window.localStream);
-              //   });
-              // }
-
-            } catch (error) {
-
-            }
             connections[id2].createOffer().then((description) => {
               connections[id2].setLocalDescription(description)
                 .then(() => { socketRef.current.emit("signal", id2, JSON.stringify({ "sdp": connections[id2].localDescription })) })//sdp-->session description
@@ -591,10 +560,10 @@ function VideoCall() {
 
   const endCall = () => {
     try {
-      const streamTracks=window.localStream.getTracks()
-      streamTracks.forEach((track)=>track.stop())
-      
-      const userTracks=localVideoRef.current.srcObject.getTracks()
+      const streamTracks = window.localStream.getTracks()
+      streamTracks.forEach((track) => track.stop())
+
+      const userTracks = localVideoRef.current.srcObject.getTracks()
       userTracks && userTracks.forEach((track) => track.stop())
 
       socketRef.current.disconnect()
@@ -604,160 +573,154 @@ function VideoCall() {
     navigate("/home")
   }
 
-  // useEffect(() => {
-  //   let cameraPermissionStatus, microphonePermissionStatus;
-
-  //   // Function to initialize permission listeners
-  //   const setupPermissionListeners = async () => {
-  //     // Check camera permission and set listener
-  //     cameraPermissionStatus = await navigator.permissions.query({ name: 'camera' });
-  //     if(cameraPermissionStatus.state!==videoAvailable)
-  //     setVideoAvailable(cameraPermissionStatus.state);
-  //     cameraPermissionStatus.onchange = () => setVideoPermission(cameraPermissionStatus.state);
-
-  //     // Check microphone permission and set listener
-  //     microphonePermissionStatus = await navigator.permissions.query({ name: 'microphone' });
-  //     setAudioPermission(microphonePermissionStatus.state);
-  //     microphonePermissionStatus.onchange = () => setAudioPermission(microphonePermissionStatus.state);
-  //   };
-
-  //   setupPermissionListeners();
-
-  //   // Clean up listeners on unmount
-  //   return () => {
-  //     if (cameraPermissionStatus) cameraPermissionStatus.onchange = null;
-  //     if (microphonePermissionStatus) microphonePermissionStatus.onchange = null;
-  //   };
-  // }, []);
 
   return (
     <div className="video-app">
-      <NavigationBar/>
-    {askUsername === true ? (
-      
-      <div className="lobby-container">
-        <AppBar position="static" className="app-bar">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Video Call Lobby
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
-        <h2 className="title">Enter into Lobby</h2>
-        <div className="set-guest-name">
-          <TextField
-            id="outlined-basic"
-            label="Enter Username"
-            variant="outlined"
-            onChange={(event) => setUsername(event.target.value)}
-          />
-          <Button variant="contained" size="medium" sx={{ mt: 3, mb: 2 }} onClick={connect}>
-            Connect
-          </Button>
-        </div>
-
-        <div>
-          <video ref={localVideoRef} autoPlay muted></video>
-        </div>
-      </div>
-    ) : (
-      <div className="meetingVideoContainer">
-      {showModal && (
-        <div className="chatRoom">
-          <div className="chatContainer">
-            <h1>Chats</h1>
-            <div className="messageBox">
-              {messages.length > 0 ? (
-                messages.map((msg, index) =>
-                  msg.senderSocketId !== socketIdRef.current ? (
-                    <div key={index} className="userChat">
-                      <TextField
-                        disabled
-                        margin="normal"
-                        className="userMessage"
-                        fullWidth
-                        label={msg.sender}
-                        value={msg.data}
-                      />
-                    </div>
-                  ) : (
-                    <div key={index} className="myChat">
-                      <TextField
-                        disabled
-                        margin="normal"
-                        className="myMessage"
-                        fullWidth
-                        label={msg.sender}
-                        value={msg.data}
-                      />
-                    </div>
-                  )
-                )
-              ) : (
-                <h2>No messages yet!</h2>
-              )}
+      {askUsername === true ? (
+        <div className='lobby-container-parent'>
+          <NavigationBar />
+          <Typography variant="h4" component="h1" className="lobby-title">
+            VALK Lobby
+          </Typography>
+          <div className="lobby-container">
+            <div className="lobby-header">
+              <div className="set-guest-name">
+                <TextField
+                  id="outlined-basic"
+                  label="Enter Username"
+                  variant="outlined"
+                  onChange={(event) => setUsername(event.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  size="medium"
+                  className="connect-button"
+                  onClick={connect}
+                >
+                  Connect
+                </Button>
+              </div>
             </div>
-          </div>
-    
-          <div className="chatArea">
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Enter your message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <Button variant="contained" onClick={sendMessage}>
-              Send
-            </Button>
+            {localVideoRef && (
+              <div className="video-preview">
+                <video ref={localVideoRef} autoPlay muted className="local-video"></video>
+              </div>
+            )}
           </div>
         </div>
-      )}
-    
-      <div className="videoGrid">
-        <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
-        {allVideos.map((video) => (
-          <div className="userVideoFrame" key={video.socketId}>
-            <video
-              data-socket={video.socketId}
-              ref={(ref) => {
-                if (ref && video.stream) {
-                  ref.srcObject = video.stream;
-                }
-              }}
-              autoPlay
-            ></video>
+
+      ) : (
+        <div className="meetingVideoContainer">
+          {showModal && (
+            <div className="chatRoom">
+              <div className="chatContainer">
+                <h1>Chats</h1>
+                <div className="messageBox">
+                  {messages.length > 0 ? (
+                    messages.map((msg, index) =>
+                      msg.data != "" && (
+                        msg.senderSocketId !== socketIdRef.current ? (
+                          <div key={index} className="userChat">
+                            {console.log("msg: ", msg.data)}
+                            <p style={{ color: "black" }}>{msg.sender}: </p>
+                            <TextField
+                              disabled
+                              margin="normal"
+                              className="userMessage"
+                              fullWidth
+                              value={msg.data}
+                            />
+                          </div>
+                        ) : (
+                          <div key={index} className="myChat">
+                            {console.log(msg.data)}
+
+                            <TextField
+                              disabled
+                              margin="normal"
+                              className="myMessage"
+                              fullWidth
+                              value={msg.data}
+                            />
+                          </div>
+                        )
+                      )
+
+                    )
+                  ) : (
+                    <h2>No messages yet!</h2>
+                  )}
+                </div>
+              </div>
+
+              <div className="chatArea">
+                <TextField
+                  margin="normal"
+                  required
+                  className='enterMsgField'
+                  label="Enter your message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                <Button variant="contained" className='msgBtn' onClick={sendMessage}>
+                  Send
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="videoGrid">
+            <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
+            <div className="userVideos">
+              {allVideos.map((video) => (
+                <div
+                  className="userVideoFrame"
+                  key={video.socketId}
+                  style={{
+                    maxWidth: videoSize.maxWidth,
+                  }}
+                >
+                  <video
+                    data-socket={video.socketId}
+                    ref={(ref) => {
+                      if (ref && video.stream) {
+                        ref.srcObject = video.stream;
+                      }
+                    }}
+                    autoPlay
+                  ></video>
+                </div>
+              ))}
+            </div>
+
           </div>
-        ))}
-      </div>
-    
-      <div className="buttonContainer">
-        <IconButton onClick={() => setVideo(!video)} style={{ color: "white" }}>
-          {video ? <VideoOnIcon /> : <VideoOffIcon />}
-        </IconButton>
-        <IconButton onClick={endCall} style={{ color: "red" }}>
-          <CallEndIcon />
-        </IconButton>
-        <IconButton onClick={() => setAudio(!audio)} style={{ color: "white" }}>
-          {audio ? <MicIcon /> : <MicOffIcon />}
-        </IconButton>
-        {screenAvailable && (
-          <IconButton onClick={() => setScreen(!screen)} style={{ color: "white" }}>
-            {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-          </IconButton>
-        )}
-        <Badge badgeContent={unseenMessages} max={999} color="primary">
-          <IconButton onClick={() => setShowModal(!showModal)} style={{ color: "white" }}>
-            <ChatIcon />
-          </IconButton>
-        </Badge>
-      </div>
-    </div>
-    
-    )}
-  </div>
+
+          <div className="buttonContainer">
+            <IconButton onClick={() => setVideo(!video)} style={{ color: "white" }}>
+              {video ? <VideoOnIcon /> : <VideoOffIcon />}
+            </IconButton>
+            <IconButton onClick={endCall} style={{ color: "red" }}>
+              <CallEndIcon />
+            </IconButton>
+            <IconButton onClick={() => setAudio(!audio)} style={{ color: "white" }}>
+              {audio ? <MicIcon /> : <MicOffIcon />}
+            </IconButton>
+            {screenAvailable && (
+              <IconButton onClick={() => setScreen(!screen)} style={{ color: "white" }}>
+                {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+              </IconButton>
+            )}
+            <Badge style={{overflow: "visible"}} badgeContent={unseenMessages} max={999} color="primary">
+              <IconButton onClick={() => setShowModal(!showModal)} style={{ color: "white" }}>
+                <ChatIcon />
+              </IconButton>
+            </Badge>
+          </div>
+        </div>
+
+      )
+      }
+    </div >
   )
 }
 
