@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser"
 const app=express()
 
 app.use(cors({
-    origin: "http://localhost:5173", // Specify frontend's origin
+    origin: "https://valk-frontend.onrender.com", // Specify frontend's origin
     credentials: true, // Allow cookies and credentials
 }));
 app.use(express.json({limit:"40kb"}))
