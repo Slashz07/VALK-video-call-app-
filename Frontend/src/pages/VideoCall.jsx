@@ -13,8 +13,9 @@ import VideoOffIcon from '@mui/icons-material/VideocamOff'
 import { useNavigate } from 'react-router-dom';
 import { TextField, Typography, IconButton, Badge } from '@mui/material';
 import NavigationBar from '../Utils/NavigationBar';
+import isBackendProd from '../Environment';
 
-const server_url = "http://localhost:5005"
+const server_url = isBackendProd(true)
 
 let connections = {}
 

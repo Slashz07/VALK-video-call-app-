@@ -3,11 +3,12 @@ import axios from 'axios'
 import httpStatus from "http-status"
 import { useDispatch } from 'react-redux'
 import { login, logout } from '../reduxFeatures/AuthSlice'
+import isBackendProd from '../Environment'
 
 export const AuthContext = createContext({})
 
 const client = axios.create({
-    baseURL: "http://localhost:5005/api/v1/users",
+    baseURL: `${isBackendProd(true)}/api/v1/users`,
     withCredentials: true
 })
 // const clientMeeting = axios.create({
