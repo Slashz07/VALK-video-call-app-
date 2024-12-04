@@ -225,9 +225,10 @@ function VideoCall() {
         console.log(error)
       }
 
-      let blackSilence = (...args) => {
+      let blackSilence = (...args) => (
         new MediaStream([black(...args), silence()])
-      }
+      )
+
 
       window.localStream = blackSilence();
       localVideoRef.current.srcObject = window.localStream
@@ -264,15 +265,43 @@ function VideoCall() {
             console.log(err)
           })
       } else {
+        console.log("stream deletion occuring")
+        window.localStream.getTracks().forEach(track => {
+          track.stop()
+        });
         const player = localVideoRef.current?.srcObject
-        const tracks = player ? player.getTracks() : null//since in case user doesnt give any permission the srcObject doesnt have tracks and srcObject.getTracks() will throw error
-        tracks && tracks.forEach((track) => track.stop())
+        const tracks = player ? player.getTracks() : []//since in case user doesnt give any permission the srcObject doesnt have tracks and srcObject.getTracks() will throw error
+        tracks.length > 0 && tracks.forEach((track) => track.stop())
+
+        let blackSilence = (...args) => (
+          new MediaStream([black(...args), silence()])
+        )
+
+        window.localStream = blackSilence();
+        localVideoRef.current.srcObject = window.localStream
+
+        for (let id in connections) {
+
+          if (id === socketIdRef.current) continue;
+
+          window.localStream.getTracks().forEach((track) => {
+            connections[id].addTrack(track, window.localStream)
+          })
+
+          connections[id].createOffer().then((description) => {
+            connections[id].setLocalDescription(description).then(() => {
+              socketRef.current.emit("signal", id, JSON.stringify({ sdp: connections[id].localDescription }))
+            })
+          }).catch((err) => console.log(err));
+
+        }
       }
     } catch (error) {
       console.log(error)
     }
   }
   const messageFromServer = (fromId, message) => {
+    console.log("signal msg recieved")
     let signal = JSON.parse(message)
     if (fromId !== socketIdRef.current) {
       if (signal.sdp) {
@@ -387,9 +416,10 @@ function VideoCall() {
             });
           } else {
             // blackSilence()
-            let blackSilence = (...args) => {
+
+            let blackSilence = (...args) => (
               new MediaStream([black(...args), silence()])
-            }
+            )
 
             window.localStream = blackSilence();
             // connections[socketId].addStream(window.localStream)
@@ -518,10 +548,10 @@ function VideoCall() {
         console.log(error)
       }
 
-      let blackSilence = (...args) => {
-        return new MediaStream([black(...args), silence()])
-      }
 
+      let blackSilence = (...args) => (
+        new MediaStream([black(...args), silence()])
+      )
       window.localStream = blackSilence()
       localVideoRef.current.srcObject = window.localStream
 
@@ -614,7 +644,7 @@ function VideoCall() {
           {showModal && (
             <div className="chatRoom">
               <div className="chatContainer">
-                <h1>Chats</h1>
+                <h1 style={{color:"black"}}>Chats</h1>
                 <div className="messageBox">
                   {messages.length > 0 ? (
                     messages.map((msg, index) =>
@@ -710,7 +740,7 @@ function VideoCall() {
                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
               </IconButton>
             )}
-            <Badge style={{overflow: "visible"}} badgeContent={unseenMessages} max={999} color="primary">
+            <Badge style={{ overflow: "visible" }} badgeContent={unseenMessages} max={999} color="primary">
               <IconButton onClick={() => setShowModal(!showModal)} style={{ color: "white" }}>
                 <ChatIcon />
               </IconButton>
