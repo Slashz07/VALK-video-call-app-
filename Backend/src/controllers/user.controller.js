@@ -46,7 +46,8 @@ const register = wrapper(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None'
     };
 
     return res.status(httpStatus.CREATED)
@@ -77,7 +78,8 @@ const login = wrapper(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None'
     };
 
     return res.status(httpStatus.OK)
@@ -105,7 +107,8 @@ const refreshAccessToken = wrapper(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'None'
     };
 
     return res.status(httpStatus.OK)
@@ -154,10 +157,10 @@ const logout = wrapper(async (req, res) => {
     );
 
     const options = {
+        httpOnly: true,
         secure: true,
-        httpOnly: true
+        sameSite: 'None'
     };
-
     return res.status(httpStatus.OK)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)

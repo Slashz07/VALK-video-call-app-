@@ -11,10 +11,6 @@ const client = axios.create({
     baseURL: `${isBackendProd(true)}/api/v1/users`,
     withCredentials: true
 })
-// const clientMeeting = axios.create({
-//     baseURL: "http://localhost:5005/api/v1/meeting",
-//     withCredentials: true
-// })
 
 export const AuthProvider = ({ children }) => {
     const userContext = useContext(AuthContext)
