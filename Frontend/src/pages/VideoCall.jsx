@@ -443,13 +443,13 @@ function VideoCall() {
               continue
             }
 
-            try {
-              window.localStream.getTracks().forEach((track) => {
-                connections[id2].addTrack(track, window.localStream);
-              });
-            } catch (error) {
-              console.log(error)
-            }
+            // try {
+            //   window.localStream.getTracks().forEach((track) => {
+            //     connections[id2].addTrack(track, window.localStream);
+            //   });
+            // } catch (error) {
+            //   console.log(error)
+            // }
 
             connections[id2].createOffer().then((description) => {
               connections[id2].setLocalDescription(description)
