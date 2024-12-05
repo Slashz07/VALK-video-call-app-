@@ -198,6 +198,16 @@ function VideoCall() {
       if (id === socketIdRef.current) {
         continue;
       }
+      //completely remove the previous tracks ,before adding newones
+      if (connections[id]) {
+        const senders = connections[id].getSenders();
+        senders.forEach((sender) => {
+          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+            connections[id].removeTrack(sender);
+          }
+        });
+      }
+      
 
       try {
         const mediaOrder = ["audio", "video"];
@@ -240,6 +250,15 @@ function VideoCall() {
       for (let id in connections) {
 
         if (id === socketIdRef.current) continue;
+         //completely remove the previous tracks ,before adding newones
+      if (connections[id]) {
+        const senders = connections[id].getSenders();
+        senders.forEach((sender) => {
+          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+            connections[id].removeTrack(sender);
+          }
+        });
+      }
 
         try {
           const mediaOrder = ["audio", "video"];
@@ -249,7 +268,6 @@ function VideoCall() {
           });
         } catch (error) {
           console.log(error)
-
         }
 
         connections[id].createOffer().then((description) => {
@@ -292,6 +310,15 @@ function VideoCall() {
         localVideoRef.current.srcObject = window.localStream
 
         for (let id in connections) {
+           //completely remove the previous tracks ,before adding newones
+      if (connections[id]) {
+        const senders = connections[id].getSenders();
+        senders.forEach((sender) => {
+          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+            connections[id].removeTrack(sender);
+          }
+        });
+      }
 
           if (id === socketIdRef.current) continue;
 
@@ -523,6 +550,16 @@ function VideoCall() {
         continue;
       }
 
+       //completely remove the previous tracks ,before adding newones
+       if (connections[id]) {
+        const senders = connections[id].getSenders();
+        senders.forEach((sender) => {
+          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+            connections[id].removeTrack(sender);
+          }
+        });
+      }
+
       try {
         const mediaOrder = ["audio", "video"];
         mediaOrder.forEach((type) => {
@@ -632,6 +669,7 @@ function VideoCall() {
 
       const userTracks = localVideoRef.current.srcObject.getTracks()
       userTracks && userTracks.forEach((track) => track.stop())
+      
 
       socketRef.current.disconnect()
     } catch (error) {
