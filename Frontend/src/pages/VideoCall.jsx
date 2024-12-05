@@ -199,12 +199,15 @@ function VideoCall() {
         continue;
       }
 
-      // connections[id].addStream(window.localStream)
-      if (window.localStream) {
-        // Add all tracks from the local stream to the peer connection
-        window.localStream.getTracks().forEach((track) => {
-          connections[id].addTrack(track, window.localStream);
+      try {
+        const mediaOrder = ["audio", "video"];
+        mediaOrder.forEach((type) => {
+          const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+          tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
         });
+      } catch (error) {
+        console.log(error)
+
       }
 
 
@@ -238,9 +241,16 @@ function VideoCall() {
 
         if (id === socketIdRef.current) continue;
 
-        window.localStream.getTracks().forEach((track) => {
-          connections[id].addTrack(track, window.localStream)
-        })
+        try {
+          const mediaOrder = ["audio", "video"];
+          mediaOrder.forEach((type) => {
+            const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+            tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
+          });
+        } catch (error) {
+          console.log(error)
+
+        }
 
         connections[id].createOffer().then((description) => {
           connections[id].setLocalDescription(description).then(() => {
@@ -285,9 +295,16 @@ function VideoCall() {
 
           if (id === socketIdRef.current) continue;
 
-          window.localStream.getTracks().forEach((track) => {
-            connections[id].addTrack(track, window.localStream)
-          })
+          try {
+            const mediaOrder = ["audio", "video"];
+            mediaOrder.forEach((type) => {
+              const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+              tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
+            });
+          } catch (error) {
+            console.log(error)
+
+          }
 
           connections[id].createOffer().then((description) => {
             connections[id].setLocalDescription(description).then(() => {
@@ -412,9 +429,16 @@ function VideoCall() {
             // Add all tracks from the local stream to the peer connection
             console.log(window.localStream.getTracks());
 
-            window.localStream.getTracks().forEach((track) => {
-              connections[socketId].addTrack(track, window.localStream);
-            });
+            try {
+              const mediaOrder = ["audio", "video"];
+              mediaOrder.forEach((type) => {
+                const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+                tracks.forEach((track) => connections[socketId].addTrack(track, window.localStream));
+              });
+            } catch (error) {
+              console.log(error)
+
+            }
           } else {
             // blackSilence()
 
@@ -426,9 +450,16 @@ function VideoCall() {
             // connections[socketId].addStream(window.localStream)
             if (window.localStream) {
               // Add all tracks from the local stream to the peer connection
-              window.localStream.getTracks().forEach((track) => {
-                connections[socketId].addTrack(track, window.localStream);
-              });
+              try {
+                const mediaOrder = ["audio", "video"];
+                mediaOrder.forEach((type) => {
+                  const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+                  tracks.forEach((track) => connections[socketId].addTrack(track, window.localStream));
+                });
+              } catch (error) {
+                console.log(error)
+
+              }
             }
 
           }
@@ -492,10 +523,15 @@ function VideoCall() {
         continue;
       }
 
-      window.localStream.getTracks().forEach((track) => {
-        console.log("tracks added from screenshare: ", track.id);
-        connections[id].addTrack(track, window.localStream)
-      })
+      try {
+        const mediaOrder = ["audio", "video"];
+        mediaOrder.forEach((type) => {
+          const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+          tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
+        });
+      } catch (error) {
+        console.log(error)
+      }
 
       connections[id].createOffer().then((description) => {
         connections[id].setLocalDescription(description).then(() => {
@@ -645,7 +681,7 @@ function VideoCall() {
           {showModal && (
             <div className="chatRoom">
               <div className="chatContainer">
-                <h1 style={{color:"black"}}>Chats</h1>
+                <h1 style={{ color: "black" }}>Chats</h1>
                 <div className="messageBox">
                   {messages.length > 0 ? (
                     messages.map((msg, index) =>
