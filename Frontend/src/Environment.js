@@ -1,6 +1,6 @@
  function isBackendProd(isProd) {
     const server={
-        dev:"http://localhost:5173",
+        dev:"http://localhost:5005",
         prod:"https://valk-backend.onrender.com"
     }
     if(isProd){
