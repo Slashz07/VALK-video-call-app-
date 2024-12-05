@@ -352,7 +352,7 @@ function VideoCall() {
 
       // Inside the "user-joined" event
       socketRef.current.on("user-joined", (id, users) => {
-
+        console.log("new user joined")
         users.forEach((socketId) => {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
 
@@ -364,7 +364,7 @@ function VideoCall() {
 
           connections[socketId].ontrack = (event) => {
             console.log("ontrack is running");
-            console.log("track revcieved+ ", event.track.id)
+            console.log("track revcieved", event.track.id)
 
             // Initialize tracking for this socketId if not already done
             if (!receivedTracks[socketId]) {
@@ -441,6 +441,14 @@ function VideoCall() {
           for (let id2 in connections) {
             if (id2 === socketIdRef.current) {
               continue
+            }
+
+            try {
+              window.localStream.getTracks().forEach((track) => {
+                connections[id2].addTrack(track, window.localStream);
+              });
+            } catch (error) {
+              console.log(error)
             }
 
             connections[id2].createOffer().then((description) => {
@@ -577,8 +585,8 @@ function VideoCall() {
   }
 
 
-  const connect = async () => {
-    await getMedia()
+  const connect = () => {
+    getMedia()
     setAskUsername(false)
 
   }
@@ -645,7 +653,7 @@ function VideoCall() {
           {showModal && (
             <div className="chatRoom">
               <div className="chatContainer">
-                <h1 style={{color:"black"}}>Chats</h1>
+                <h1 style={{ color: "black" }}>Chats</h1>
                 <div className="messageBox">
                   {messages.length > 0 ? (
                     messages.map((msg, index) =>
@@ -758,3 +766,4 @@ function VideoCall() {
 
 
 export default VideoCall
+videoCallUpdated.txt
