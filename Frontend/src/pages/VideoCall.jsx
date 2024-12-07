@@ -207,7 +207,7 @@ function VideoCall() {
           }
         });
       }
-      
+
 
       try {
         const mediaOrder = ["audio", "video"];
@@ -250,15 +250,15 @@ function VideoCall() {
       for (let id in connections) {
 
         if (id === socketIdRef.current) continue;
-         //completely remove the previous tracks ,before adding newones
-      if (connections[id]) {
-        const senders = connections[id].getSenders();
-        senders.forEach((sender) => {
-          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
-            connections[id].removeTrack(sender);
-          }
-        });
-      }
+        //completely remove the previous tracks ,before adding newones
+        if (connections[id]) {
+          const senders = connections[id].getSenders();
+          senders.forEach((sender) => {
+            if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+              connections[id].removeTrack(sender);
+            }
+          });
+        }
 
         try {
           const mediaOrder = ["audio", "video"];
@@ -310,15 +310,15 @@ function VideoCall() {
         localVideoRef.current.srcObject = window.localStream
 
         for (let id in connections) {
-           //completely remove the previous tracks ,before adding newones
-      if (connections[id]) {
-        const senders = connections[id].getSenders();
-        senders.forEach((sender) => {
-          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
-            connections[id].removeTrack(sender);
+          //completely remove the previous tracks ,before adding newones
+          if (connections[id]) {
+            const senders = connections[id].getSenders();
+            senders.forEach((sender) => {
+              if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+                connections[id].removeTrack(sender);
+              }
+            });
           }
-        });
-      }
 
           if (id === socketIdRef.current) continue;
 
@@ -408,44 +408,34 @@ function VideoCall() {
 
           connections[socketId].ontrack = (event) => {
             console.log("ontrack is running");
-            console.log("track revcieved+ ", event.track.id)
-
-            // Initialize tracking for this socketId if not already done
-            if (!receivedTracks[socketId]) {
-              receivedTracks[socketId] = new Set();
-            }
-
-            // Add the track ID to the Set
-            receivedTracks[socketId].add(event.track.id);
+            console.log("track received:", event.track.id);
 
             const stream = event.streams[0];
 
-            // Check if all expected tracks for this stream have been received
-            if (stream.getTracks().every((track) => receivedTracks[socketId].has(track.id))) {
-              // Create or update the video object
-              const videoExists = videoRef.current.find((video) => video.socketId === socketId);
-              if (videoExists) {
-                setAllVideos((videos) => {
-                  const updatedVideos = videos.map((video) =>
-                    video.socketId === socketId ? { ...video, stream: stream } : video
-                  );
-                  videoRef.current = updatedVideos;
-                  return updatedVideos;
-                });
-              } else {
-                const newVideo = {
-                  socketId: socketId,
-                  stream: stream,
-                  autoPlay: true,
-                  playsinline: true,
-                };
+            // Check if this stream is already attached to a video element
+            const videoExists = videoRef.current.find((video) => video.socketId === socketId);
+            if (videoExists) {
+              setAllVideos((videos) => {
+                const updatedVideos = videos.map((video) =>
+                  video.socketId === socketId ? { ...video, stream: stream } : video
+                );
+                videoRef.current = updatedVideos;
+                return updatedVideos;
+              });
+            } else {
+              // Add a new video object if not already present
+              const newVideo = {
+                socketId: socketId,
+                stream: stream,
+                autoPlay: true,
+                playsinline: true,
+              };
 
-                setAllVideos((videos) => {
-                  const updatedVideos = [...videos, newVideo];
-                  videoRef.current = updatedVideos;
-                  return updatedVideos;
-                });
-              }
+              setAllVideos((videos) => {
+                const updatedVideos = [...videos, newVideo];
+                videoRef.current = updatedVideos;
+                return updatedVideos;
+              });
             }
           };
 
@@ -550,8 +540,8 @@ function VideoCall() {
         continue;
       }
 
-       //completely remove the previous tracks ,before adding newones
-       if (connections[id]) {
+      //completely remove the previous tracks ,before adding newones
+      if (connections[id]) {
         const senders = connections[id].getSenders();
         senders.forEach((sender) => {
           if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
@@ -669,7 +659,7 @@ function VideoCall() {
 
       const userTracks = localVideoRef.current.srcObject.getTracks()
       userTracks && userTracks.forEach((track) => track.stop())
-      
+
 
       socketRef.current.disconnect()
     } catch (error) {
