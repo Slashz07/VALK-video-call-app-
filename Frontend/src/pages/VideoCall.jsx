@@ -358,11 +358,13 @@ function VideoCall() {
               }).catch((err) => console.log(err))
             }).catch((err) => console.log(err))
           }
-        }).catch((err) => console.log(err))
+        }).then(()=>(
+         
+          signal.ice? connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err)):""
+          
+        )).catch((err) => console.log(err))
       }
-      if (signal.ice) {
-        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err))
-      }
+      
     }
   }
 
@@ -396,7 +398,7 @@ function VideoCall() {
 
       // Inside the "user-joined" event
       socketRef.current.on("user-joined", (id, users) => {
-        console.log("new user joined")
+
         users.forEach((socketId) => {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
 
@@ -408,37 +410,46 @@ function VideoCall() {
 
           connections[socketId].ontrack = (event) => {
             console.log("ontrack is running");
-            console.log("track kind: ",event.track.kind," , track received:", event.track.id);
+            console.log("track revcieved+ ", event.track.id)
+
+            // Initialize tracking for this socketId if not already done
+            if (!receivedTracks[socketId]) {
+              receivedTracks[socketId] = new Set();
+            }
+
+            // Add the track ID to the Set
+            receivedTracks[socketId].add(event.track.id);
 
             const stream = event.streams[0];
 
-            // Check if this stream is already attached to a video element
-            const videoExists = videoRef.current.find((video) => video.socketId === socketId);
-            if (videoExists) {
-              setAllVideos((videos) => {
-                const updatedVideos = videos.map((video) =>
-                  video.socketId === socketId ? { ...video, stream: stream } : video
-                );
-                videoRef.current = updatedVideos;
-                return updatedVideos;
-              });
-            } else {
-              // Add a new video object if not already present
-              const newVideo = {
-                socketId: socketId,
-                stream: stream,
-                autoPlay: true,
-                playsinline: true,
-              };
+            // Check if all expected tracks for this stream have been received
+            if (stream.getTracks().every((track) => receivedTracks[socketId].has(track.id))) {
+              // Create or update the video object
+              const videoExists = videoRef.current.find((video) => video.socketId === socketId);
+              if (videoExists) {
+                setAllVideos((videos) => {
+                  const updatedVideos = videos.map((video) =>
+                    video.socketId === socketId ? { ...video, stream: stream } : video
+                  );
+                  videoRef.current = updatedVideos;
+                  return updatedVideos;
+                });
+              } else {
+                const newVideo = {
+                  socketId: socketId,
+                  stream: stream,
+                  autoPlay: true,
+                  playsinline: true,
+                };
 
-              setAllVideos((videos) => {
-                const updatedVideos = [...videos, newVideo];
-                videoRef.current = updatedVideos;
-                return updatedVideos;
-              });
+                setAllVideos((videos) => {
+                  const updatedVideos = [...videos, newVideo];
+                  videoRef.current = updatedVideos;
+                  return updatedVideos;
+                });
+              }
             }
           };
-
 
           if (window.localStream !== undefined || window.localStream !== null) {
             console.log("reached adding stream")
