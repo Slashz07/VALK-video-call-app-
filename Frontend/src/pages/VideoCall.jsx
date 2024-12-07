@@ -345,26 +345,64 @@ function VideoCall() {
       console.log(error)
     }
   }
+  const pendingCandidates = {}; // Store candidates until the remote description is set
+
   const messageFromServer = (fromId, message) => {
-    console.log("signal msg recieved")
-    let signal = JSON.parse(message)
+    console.log("Signal message received");
+    const signal = JSON.parse(message);
+  
     if (fromId !== socketIdRef.current) {
       if (signal.sdp) {
-        connections[fromId].setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(() => {
-          if (signal.sdp.type === "offer") {
-            connections[fromId].createAnswer().then((description) => {
-              connections[fromId].setLocalDescription(description).then(() => {
-                socketRef.current.emit("signal", fromId, JSON.stringify({ "sdp": connections[fromId].localDescription }))
-              }).catch((err) => console.log(err))
-            }).catch((err) => console.log(err))
-          }
-        }).catch((err) => console.log(err))
+        connections[fromId]
+          .setRemoteDescription(new RTCSessionDescription(signal.sdp))
+          .then(() => {
+            // Handle SDP offer
+            if (signal.sdp.type === "offer") {
+              connections[fromId]
+                .createAnswer()
+                .then((description) => {
+                  return connections[fromId].setLocalDescription(description);
+                })
+                .then(() => {
+                  socketRef.current.emit(
+                    "signal",
+                    fromId,
+                    JSON.stringify({ sdp: connections[fromId].localDescription })
+                  );
+                })
+                .catch((err) => console.log("Error creating answer:", err));
+            }
+  
+            // Add pending ICE candidates
+            if (pendingCandidates[fromId]) {
+              pendingCandidates[fromId].forEach((candidate) => {
+                connections[fromId].addIceCandidate(candidate).catch((err) => {
+                  console.log("Error adding pending ICE candidate:", err);
+                });
+              });
+              delete pendingCandidates[fromId];
+            }
+          })
+          .catch((err) => console.log("Error setting remote description:", err));
       }
+  
       if (signal.ice) {
-        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err))
+        const candidate = new RTCIceCandidate(signal.ice);
+        if (connections[fromId].remoteDescription) {
+          connections[fromId].addIceCandidate(candidate).catch((err) => {
+            console.log("Error adding ICE candidate:", err);
+          });
+        } else {
+          // Queue the candidate if the remote description is not set
+          if (!pendingCandidates[fromId]) {
+            pendingCandidates[fromId] = [];
+          }
+          pendingCandidates[fromId].push(candidate);
+        }
       }
     }
-  }
+  };
+  
 
   const addMessage = (data, sender, senderSocketId) => {
     console.log("message recieved")
