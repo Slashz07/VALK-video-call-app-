@@ -346,7 +346,7 @@ function VideoCall() {
     }
   }
   const messageFromServer = (fromId, message) => {
-    console.log("signal msg recieved")
+    console.log("signal answer recieved")
     let signal = JSON.parse(message)
     if (fromId !== socketIdRef.current) {
       if (signal.sdp) {
@@ -358,11 +358,13 @@ function VideoCall() {
               }).catch((err) => console.log(err))
             }).catch((err) => console.log(err))
           }
-        }).catch((err) => console.log(err))
+        }).then(()=>(
+         
+          signal.ice? connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err)):""
+          
+        )).catch((err) => console.log(err))
       }
-      if (signal.ice) {
-        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err))
-      }
+      
     }
   }
 
@@ -396,7 +398,7 @@ function VideoCall() {
 
       // Inside the "user-joined" event
       socketRef.current.on("user-joined", (id, users) => {
-
+        console.log("new user joined")
         users.forEach((socketId) => {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
 
@@ -408,7 +410,7 @@ function VideoCall() {
 
           connections[socketId].ontrack = (event) => {
             console.log("ontrack is running");
-            console.log("track received:", event.track.id);
+            console.log("track kind: ",event.track.kind," , track received:", event.track.id);
 
             const stream = event.streams[0];
 
