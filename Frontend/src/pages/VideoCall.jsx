@@ -358,15 +358,14 @@ function VideoCall() {
               }).catch((err) => console.log(err))
             }).catch((err) => console.log(err))
           }
-        }).then(()=>(
-         
-          signal.ice? connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err)):""
-          
-        )).catch((err) => console.log(err))
+        }).catch((err) => console.log(err))
       }
-      
+      if (signal.ice) {
+        connections[fromId].addIceCandidate(new RTCIceCandidate(signal.ice)).catch(err => console.log(err))
+      }
     }
   }
+
 
   const addMessage = (data, sender, senderSocketId) => {
     console.log("message recieved")
