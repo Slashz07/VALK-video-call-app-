@@ -539,6 +539,17 @@ function VideoCall() {
               continue
             }
 
+            try {
+                const mediaOrder = ["audio", "video"];
+                mediaOrder.forEach((type) => {
+                  const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+                  tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
+                });
+              } catch (error) {
+                console.log(error)
+  
+              }
+
             connections[id2].createOffer().then((description) => {
               connections[id2].setLocalDescription(description)
                 .then(() => { socketRef.current.emit("signal", id2, JSON.stringify({ "sdp": connections[id2].localDescription })) })//sdp-->session description
