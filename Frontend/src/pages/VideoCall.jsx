@@ -539,23 +539,24 @@ function VideoCall() {
               continue
             }
 
-            try {
-              const mediaOrder = ["audio", "video"];
-              mediaOrder.forEach((type) => {
-                const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
-        
-                // Check if the track is already added
-                tracks.forEach((track) => {
-                  const senders = connections[id2].getSenders();
-                  const trackAlreadyAdded = senders.some(sender => sender.track === track);
-        
-                  if (!trackAlreadyAdded) {
-                    connections[id2].addTrack(track, window.localStream);
-                  }
-                });
-              });
-            } catch (error) {
-              console
+                try {
+      const mediaOrder = ["audio", "video"];
+      mediaOrder.forEach((type) => {
+        const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+
+        // Check if the track is already added
+        tracks.forEach((track) => {
+          const senders = connections[id2].getSenders();
+          const trackAlreadyAdded = senders.some(sender => sender.track === track);
+
+          if (!trackAlreadyAdded) {
+            connections[id2].addTrack(track, window.localStream);
+          }
+        });
+      });
+    } catch (error) {
+      console
+    }
 
             connections[id2].createOffer().then((description) => {
               connections[id2].setLocalDescription(description)
