@@ -74,7 +74,7 @@ export default function Authentication() {
           md={7}
           sx={{
             backgroundImage:
-              'url("../../public/signInImage.jpg")',
+              'url("/signInImage.jpg")',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: 'contain',
