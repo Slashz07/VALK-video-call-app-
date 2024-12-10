@@ -119,7 +119,7 @@ body {
   height: 90vh;
   color: black;
   position: absolute;
-  width: 330px;
+  width: 430px;
   right: 0;
   background-color: white;
   border-radius: 10px;
@@ -152,8 +152,11 @@ body {
 
 
 .myChat {
-  text-align: end;
   margin-right: 11px;
+  border: 1px solid black;
+    background-color: #d0fbcb;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
 }
 
 .myMessage {
@@ -172,6 +175,13 @@ body {
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
+}
+
+.userChat{
+  border: 1px solid black;
+  background-color: #d9d9d9;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
 }
 
 .enterMsgField {
@@ -276,7 +286,7 @@ body {
   }
 
   .video-preview{
-    width: 68vw;
+    width: 65vw;
   }
 
   .localUserVideo{
@@ -299,6 +309,10 @@ body {
 
   .buttonContainer{
     left: 27%;
+  }
+
+  .chatRoom{
+    width: 330px;
   }
  
 }

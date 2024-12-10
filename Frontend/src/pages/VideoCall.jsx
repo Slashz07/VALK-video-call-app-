@@ -11,7 +11,7 @@ import ChatIcon from '@mui/icons-material/Chat'
 import VideoOnIcon from '@mui/icons-material/Videocam';
 import VideoOffIcon from '@mui/icons-material/VideocamOff'
 import { useNavigate } from 'react-router-dom';
-import { TextField, Typography, IconButton, Badge } from '@mui/material';
+import { TextField, Typography, IconButton, Badge, ListItem, List, ListItemText } from '@mui/material';
 import NavigationBar from '../Utils/NavigationBar';
 import isBackendProd from '../Environment';
 
@@ -784,7 +784,7 @@ function VideoCall() {
                   className="username-input"
                   InputProps={{
                     style: {
-                      borderRadius: 0, // Removes border-radius
+                      borderRadius: 0, 
                     },
                   }}
                 />
@@ -819,43 +819,40 @@ function VideoCall() {
                   marginBottom: "2rem"
                 }}>Chats</h1>
                 <div className="messageBox">
-                  {messages.length > 0 ? (
-                    messages.map((msg, index) =>
-                      msg.data != "" && (
-                        msg.senderSocketId !== socketIdRef.current ? (
-                          <div key={index} className="userChat">
-                            {console.log("msg: ", msg.data)}
-                            <p style={{ color: "black" }}>{msg.sender}: </p>
-                            <TextField
-                              disabled
-                              margin="normal"
-                              className="userMessage"
-                              fullWidth
-                              value={msg.data}
-                            />
-                          </div>
-                        ) : (
-                          <div key={index} className="myChat">
-                            {console.log(msg.data)}
-
-                            <TextField
-                              disabled
-                              margin="normal"
-                              className="myMessage"
-                              fullWidth
-                              value={msg.data}
-                            />
-                          </div>
+                  <List>
+                    {messages.length > 0 ? (
+                      messages.map((msg, index) =>
+                        msg.data != "" && (
+                          msg.senderSocketId !== socketIdRef.current ? (
+                            <div key={index} className="userChat">
+                              {console.log("msg: ", msg.data)}
+                              <ListItem>
+                                <ListItemText
+                                 primary={msg.sender}
+                                 secondary={msg.data}
+                                />
+                              </ListItem>
+                              
+                            </div>
+                          ) : (
+                            <div key={index} className="myChat">
+                              {console.log(msg.data)}
+                              <ListItem>
+                                <ListItemText
+                                  secondary={msg.data}
+                                />
+                              </ListItem>
+                            </div>
+                          )
                         )
                       )
-
-                    )
-                  ) : (
-                    <h2 style={{
-                      marginTop: "15rem",
-                      textAlign: "center"
-                    }}>No messages yet!</h2>
-                  )}
+                    ) : (
+                      <h2 style={{
+                        marginTop: "15rem",
+                        textAlign: "center"
+                      }}>No messages yet!</h2>
+                    )}
+                  </List>
                 </div>
               </div>
 
@@ -877,7 +874,6 @@ function VideoCall() {
 
           <div className="videoGrid">
             <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
-            {console.log(window.innerWidth)}
             <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} >
               {allVideos.map((video) => (
                 <div
