@@ -25,7 +25,7 @@ const peerConfigConnections = {
       "urls": "stun:stun.l.google.com:19302"
     },
     {
-      "urls":"relay1.expressturn.com:3478",
+      "urls":"turn:relay1.expressturn.com:3478",
       "username":"efQTT5F1GUVGQAR40F",
       "credential":"izT9LjQwzi8IVw81"
     }
