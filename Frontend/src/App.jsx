@@ -29,17 +29,22 @@ function App() {
   return (
     <div className='mainContainer'>
       <div className='mainContent'>
-      {console.log(loading)}
-      {
-        loading ?
-          <h2 style={{
-            display: "flex", justifyContent: "center",
-            alignItems: "center"
-          }}>Loading...</h2> :
-          <Outlet />
-      }
+        {console.log(loading)}
+        {
+          loading ?
+            <div style={{
+              height: "80vh",
+              display: "flex", justifyContent: "center",
+              alignItems: "center",
+              backgroundColor:"black"
+            }}>
+              <h2 style={{color:"white"}}>Loading...</h2>
+            </div>
+            :
+            <Outlet />
+        }
       </div>
-      
+
       <Footer />
     </div>
   )
