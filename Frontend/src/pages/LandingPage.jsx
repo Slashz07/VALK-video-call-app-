@@ -17,7 +17,7 @@ function LandingPage() {
             </Link>
           </div>
           <div className='landingPageImage'>
-            <img src="../../public/mobile.png" alt="" />
+            <img src="/mobile.png" alt="" />
           </div>
         </div>
       </div>
