@@ -21,9 +21,9 @@ let connections = {}
 
 const peerConfigConnections = {
   "iceServers": [
-    {
-      "urls": "stun:stun.l.google.com:19302"
-    },
+    // {
+    //   "urls": "stun:stun.l.google.com:19302"
+    // },
     {
       "urls": "turn:relay1.expressturn.com:3478",
       "username": "efQTT5F1GUVGQAR40F",
@@ -467,7 +467,8 @@ function VideoCall() {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
 
           connections[socketId].onicecandidate = (event) => {
-            if (event.candidate !== null) {
+            if (event.candidate !== null) { 
+              console.log("ICE Candidate:", event.candidate.candidate);
               socketRef.current.emit("signal", socketId, JSON.stringify({ ice: event.candidate }));
             }
           };
