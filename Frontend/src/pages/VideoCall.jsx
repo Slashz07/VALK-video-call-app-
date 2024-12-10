@@ -826,7 +826,6 @@ function VideoCall() {
                         msg.data != "" && (
                           msg.senderSocketId !== socketIdRef.current ? (
                             <div key={index} className="userChat">
-                              {console.log("msg: ", msg.data)}
                               <ListItem>
                                 <ListItemText
                                  primary={msg.sender}
@@ -837,7 +836,6 @@ function VideoCall() {
                             </div>
                           ) : (
                             <div key={index} className="myChat">
-                              {console.log(msg.data)}
                               <ListItem>
                                 <ListItemText
                                   secondary={msg.data}
