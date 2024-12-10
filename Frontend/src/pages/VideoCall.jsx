@@ -23,6 +23,11 @@ const peerConfigConnections = {
   "iceServers": [
     {
       "urls": "stun:stun.l.google.com:19302"
+    },
+    {
+      "urls":"relay1.expressturn.com:3478",
+      "username":"efQTT5F1GUVGQAR40F",
+      "credential":"izT9LjQwzi8IVw81"
     }
   ]
 }
@@ -548,6 +553,7 @@ function VideoCall() {
         tracks.forEach((track) => {
           const senders = connections[id2].getSenders();
           const trackAlreadyAdded = senders.some(sender => sender.track === track);
+
 
           if (!trackAlreadyAdded) {
             connections[id2].addTrack(track, window.localStream);
