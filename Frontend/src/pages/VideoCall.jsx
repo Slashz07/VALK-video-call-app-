@@ -25,9 +25,9 @@ const peerConfigConnections = {
       "urls": "stun:stun.l.google.com:19302"
     },
     {
-      "urls":"turn:relay1.expressturn.com:3478",
-      "username":"efQTT5F1GUVGQAR40F",
-      "credential":"izT9LjQwzi8IVw81"
+      "urls": "turn:relay1.expressturn.com:3478",
+      "username": "efQTT5F1GUVGQAR40F",
+      "credential": "izT9LjQwzi8IVw81"
     }
   ]
 }
@@ -59,19 +59,42 @@ function VideoCall() {
   const [videoPermission, setVideoPermission] = useState(false)
   const [audioPermission, setAudioPermission] = useState(false)
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
+  const [twoUserStyle, setTwoUserStyle] = useState({})
   const navigate = useNavigate()
 
 
   useEffect(() => {
-    const userCount = allVideos.length;
+    const updateVideoSize = () => {
+      const screenWidth = window.innerWidth;
 
-    if (userCount === 1) {
-      setVideoSize({ maxWidth: '45%' }); // Larger for a single user
-    } else if (userCount === 2) {
-      setVideoSize({ maxWidth: '35%' }); // Fit two users perfectly
-    } else if (userCount > 2) {
-      setVideoSize({ maxWidth: '30%' }); // Enforce same size for more users
-    }
+      if (screenWidth <= 560) {
+        // Adjust sizes for smaller screens
+        if (allVideos.length === 1) {
+          setVideoSize({ maxWidth: '90%' });
+        } else if (allVideos.length === 2) {
+          setVideoSize({ maxWidth: '80%' });
+        }
+        else {
+          // setTwoUserStyle({})
+          setVideoSize({ maxWidth: '70%' });
+        }
+      } else {
+        // Default sizes for larger screens
+        // setTwoUserStyle({})
+        if (allVideos.length === 1) {
+          setVideoSize({ maxWidth: '45%' });
+        } else if (allVideos.length === 2) {
+          setVideoSize({ maxWidth: '35%' });
+        } else {
+          setVideoSize({ maxWidth: '30%' });
+        }
+      }
+    };
+
+    updateVideoSize(); // Initial call
+    window.addEventListener('resize', updateVideoSize); // Update on resize
+
+    return () => window.removeEventListener('resize', updateVideoSize); // Cleanup
   }, [allVideos.length]);
 
 
@@ -212,7 +235,7 @@ function VideoCall() {
           }
         });
       }
-      
+
 
       try {
         const mediaOrder = ["audio", "video"];
@@ -255,15 +278,15 @@ function VideoCall() {
       for (let id in connections) {
 
         if (id === socketIdRef.current) continue;
-         //completely remove the previous tracks ,before adding newones
-      if (connections[id]) {
-        const senders = connections[id].getSenders();
-        senders.forEach((sender) => {
-          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
-            connections[id].removeTrack(sender);
-          }
-        });
-      }
+        //completely remove the previous tracks ,before adding newones
+        if (connections[id]) {
+          const senders = connections[id].getSenders();
+          senders.forEach((sender) => {
+            if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+              connections[id].removeTrack(sender);
+            }
+          });
+        }
 
         try {
           const mediaOrder = ["audio", "video"];
@@ -315,15 +338,15 @@ function VideoCall() {
         localVideoRef.current.srcObject = window.localStream
 
         for (let id in connections) {
-           //completely remove the previous tracks ,before adding newones
-      if (connections[id]) {
-        const senders = connections[id].getSenders();
-        senders.forEach((sender) => {
-          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
-            connections[id].removeTrack(sender);
+          //completely remove the previous tracks ,before adding newones
+          if (connections[id]) {
+            const senders = connections[id].getSenders();
+            senders.forEach((sender) => {
+              if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+                connections[id].removeTrack(sender);
+              }
+            });
           }
-        });
-      }
 
           if (id === socketIdRef.current) continue;
 
@@ -355,7 +378,7 @@ function VideoCall() {
   const messageFromServer = (fromId, message) => {
     console.log("Signal message received");
     const signal = JSON.parse(message);
-  
+
     if (fromId !== socketIdRef.current) {
       if (signal.sdp) {
         connections[fromId]
@@ -377,7 +400,7 @@ function VideoCall() {
                 })
                 .catch((err) => console.log("Error creating answer:", err));
             }
-  
+
             // Add pending ICE candidates
             if (pendingCandidates[fromId]) {
               pendingCandidates[fromId].forEach((candidate) => {
@@ -390,7 +413,7 @@ function VideoCall() {
           })
           .catch((err) => console.log("Error setting remote description:", err));
       }
-  
+
       if (signal.ice) {
         const candidate = new RTCIceCandidate(signal.ice);
         if (connections[fromId].remoteDescription) {
@@ -407,7 +430,7 @@ function VideoCall() {
       }
     }
   };
-  
+
 
   const addMessage = (data, sender, senderSocketId) => {
     console.log("message recieved")
@@ -544,25 +567,25 @@ function VideoCall() {
               continue
             }
 
-                try {
-      const mediaOrder = ["audio", "video"];
-      mediaOrder.forEach((type) => {
-        const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+            try {
+              const mediaOrder = ["audio", "video"];
+              mediaOrder.forEach((type) => {
+                const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
 
-        // Check if the track is already added
-        tracks.forEach((track) => {
-          const senders = connections[id2].getSenders();
-          const trackAlreadyAdded = senders.some(sender => sender.track === track);
+                // Check if the track is already added
+                tracks.forEach((track) => {
+                  const senders = connections[id2].getSenders();
+                  const trackAlreadyAdded = senders.some(sender => sender.track === track);
 
 
-          if (!trackAlreadyAdded) {
-            connections[id2].addTrack(track, window.localStream);
-          }
-        });
-      });
-    } catch (error) {
-      console
-    }
+                  if (!trackAlreadyAdded) {
+                    connections[id2].addTrack(track, window.localStream);
+                  }
+                });
+              });
+            } catch (error) {
+              console
+            }
 
             connections[id2].createOffer().then((description) => {
               connections[id2].setLocalDescription(description)
@@ -613,8 +636,8 @@ function VideoCall() {
         continue;
       }
 
-       //completely remove the previous tracks ,before adding newones
-       if (connections[id]) {
+      //completely remove the previous tracks ,before adding newones
+      if (connections[id]) {
         const senders = connections[id].getSenders();
         senders.forEach((sender) => {
           if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
@@ -732,7 +755,7 @@ function VideoCall() {
 
       const userTracks = localVideoRef.current.srcObject.getTracks()
       userTracks && userTracks.forEach((track) => track.stop())
-      
+
 
       socketRef.current.disconnect()
     } catch (error) {
@@ -758,12 +781,19 @@ function VideoCall() {
                   label="Enter Username"
                   variant="outlined"
                   onChange={(event) => setUsername(event.target.value)}
+                  className="username-input"
+                  InputProps={{
+                    style: {
+                      borderRadius: 0, // Removes border-radius
+                    },
+                  }}
                 />
                 <Button
                   variant="contained"
                   size="medium"
                   className="connect-button"
                   onClick={connect}
+                  sx={{ borderRadius: 0 }}
                 >
                   Connect
                 </Button>
@@ -782,7 +812,12 @@ function VideoCall() {
           {showModal && (
             <div className="chatRoom">
               <div className="chatContainer">
-                <h1 style={{ color: "black" }}>Chats</h1>
+                <h1 style={{
+                  color: "black",
+                  marginTop: "2rem",
+                  textAlign: "center",
+                  marginBottom: "2rem"
+                }}>Chats</h1>
                 <div className="messageBox">
                   {messages.length > 0 ? (
                     messages.map((msg, index) =>
@@ -816,7 +851,10 @@ function VideoCall() {
 
                     )
                   ) : (
-                    <h2>No messages yet!</h2>
+                    <h2 style={{
+                      marginTop: "15rem",
+                      textAlign: "center"
+                    }}>No messages yet!</h2>
                   )}
                 </div>
               </div>
@@ -839,7 +877,8 @@ function VideoCall() {
 
           <div className="videoGrid">
             <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
-            <div className="userVideos">
+            {console.log(window.innerWidth)}
+            <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} >
               {allVideos.map((video) => (
                 <div
                   className="userVideoFrame"

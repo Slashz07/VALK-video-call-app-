@@ -31,6 +31,7 @@ function Home(props) {
             <TextField
               margin="normal"
               required
+              className='enterMeetCode'
               fullWidth
               id="meetingCode"
               label="MeetCode"
@@ -39,7 +40,7 @@ function Home(props) {
               value={meetingCode}
               onChange={(e) => setMeetingCode(e.target.value)}
             />
-            <Button variant='contained' 
+            <Button className='codeJoinBtn' variant='contained' 
              onClick={()=>handleMeeting()}
             >
               JOIN
