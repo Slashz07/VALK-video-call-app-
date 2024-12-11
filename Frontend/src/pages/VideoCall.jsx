@@ -468,7 +468,6 @@ function VideoCall() {
 
           connections[socketId].onicecandidate = (event) => {
             if (event.candidate !== null) { 
-              console.log("ICE Candidate:", event.candidate.candidate);
               socketRef.current.emit("signal", socketId, JSON.stringify({ ice: event.candidate }));
             }
           };
