@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { AuthContext } from '../context/AuthContext';
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import { Snackbar } from '@mui/material';
 
 function NavigationBar() {
 
@@ -74,18 +75,46 @@ function NavigationBar() {
                         className="logout-button"
                         onClick={async () => {
                             try {
-                                await userLogout();
-                                navigate("/");
+                                setError("")
+                                const msg = await userLogout()
+                                setMessage(msg)
+                                setOpen(true)
+                                navigate("/")
+
                             } catch (error) {
-                                console.error(error);
+                                setError(error)
+                                console.error(error.response.data.message);
                             }
                         }}
                     >
                         Logout
                     </button>
                 )}
-            </div>
 
+
+            </div>
+            {error === "" ? <Snackbar
+                    open={open}
+                    autoHideDuration={2000}
+                    onClose={() => {
+                        setOpen(false)
+                    }}
+                    message={message}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+
+                /> : <Snackbar
+                    open={open}
+                    autoHideDuration={2000}
+                    onClose={() => {
+                        setOpen(false)
+                    }}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                >
+                    <Alert severity={"error"} sx={{ width: "100%" }}>
+                        {message}
+                    </Alert>
+                </Snackbar>
+                }
             {/* Hamburger Menu */}
             <div className="hamburgerMenu" onClick={toggleMenu}>
                 {isCollapsed ? <CloseIcon style={{ color: "white" }} /> : <MenuIcon style={{ color: "white" }} />}
