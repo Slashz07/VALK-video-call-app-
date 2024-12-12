@@ -218,6 +218,11 @@ function VideoCall() {
 
 
   const getDeviceStreamsSuccess = (stream) => {
+    try {
+      window.localStream.getTracks().forEach((track) => track.stop())
+    } catch (error) {
+      console.log(error)
+    }
 
     window.localStream = stream
     localVideoRef.current.srcObject = stream
@@ -315,10 +320,8 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
-        
-        window.localStream.getTracks().forEach((track) => track.stop())
-
         if(front){
+        window.localStream.getTracks().forEach((track) => track.stop())
         navigator.mediaDevices.getUserMedia({ audio, video: video?{ facingMode: "user" }:video })
         .then(getDeviceStreamsSuccess)
         .then((stream) => { })
@@ -327,6 +330,7 @@ function VideoCall() {
         })
 
         }else{
+          window.localStream.getTracks().forEach((track) => track.stop())
           navigator.mediaDevices.getUserMedia({ audio, video:video?{ facingMode: "environment" }:video })
           .then(getDeviceStreamsSuccess)
           .then((stream) => { })
