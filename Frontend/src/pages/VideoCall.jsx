@@ -319,9 +319,9 @@ function VideoCall() {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
 
-       await window.localStream.getTracks().forEach((track) => track.stop())
+        window.localStream.getTracks().forEach((track) => track.stop())
 
-        // await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
         const constraints = {
           audio, video: video ?
