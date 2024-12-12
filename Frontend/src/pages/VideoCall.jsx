@@ -318,22 +318,26 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
+        
+        window.localStream.getTracks().forEach((track) => track.stop())
 
+        if(front){
+        navigator.mediaDevices.getUserMedia({ audio, video: video?{ facingMode: "user" }:video })
+        .then(getDeviceStreamsSuccess)
+        .then((stream) => { })
+        .catch((err) => {
+          console.log(err)
+        })
 
-        const constraints = {
-          audio, video: video ?
-            { facingMode: front?"user":"environment" }
-             : video
+        }else{
+          navigator.mediaDevices.getUserMedia({ audio, video:video?{ facingMode: "environment" }:video })
+          .then(getDeviceStreamsSuccess)
+          .then((stream) => { })
+          .catch((err) => {
+            console.log(err)
+          })
         }
-
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(getDeviceStreamsSuccess)
-            .then((stream) => { })
-            .catch((err) => {
-              console.log(err)
-            })
-
-
+       
       } else {
         console.log("stream deletion occuring")
         window.localStream.getTracks().forEach(track => {
@@ -634,7 +638,6 @@ function VideoCall() {
 
   useEffect(() => {
     if (video !== undefined && audio !== undefined) {
-      window.localStream.getTracks().forEach((track) => track.stop())
       getDeviceStreams()
     }
   }, [audio, video, front])
