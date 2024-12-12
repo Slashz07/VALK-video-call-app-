@@ -319,6 +319,7 @@ function VideoCall() {
       if (video && videoAvailable || audio && audioAvailable) {
 
         window.localStream.getTracks().forEach((track) => track.stop())
+        window.localStream = null;
 
         if (front) {
           navigator.mediaDevices.getUserMedia({ audio, video: video ? { facingMode: "user" } : video })
