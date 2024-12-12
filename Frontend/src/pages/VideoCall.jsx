@@ -320,6 +320,10 @@ function VideoCall() {
       if (video && videoAvailable || audio && audioAvailable) {
 
         window.localStream.getTracks().forEach((track) => track.stop())
+        window.localStream=null;
+        const videoTracks = localVideoRef.current.srcObject.getTracks();
+        videoTracks.forEach((track) => track.stop());
+        localVideoRef.current.srcObject = null;
 
         await new Promise((resolve) => setTimeout(resolve, 100));
 
