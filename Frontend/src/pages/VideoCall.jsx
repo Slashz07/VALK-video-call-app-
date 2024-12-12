@@ -61,7 +61,7 @@ function VideoCall() {
   const [audioPermission, setAudioPermission] = useState(false)
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
   const [front, setFront] = useState(1);
-  const [rearCameraAvailable,setRearCameraAvailable]=useState(false)
+  const [rearCameraAvailable, setRearCameraAvailable] = useState(false)
   const navigate = useNavigate()
 
 
@@ -124,7 +124,9 @@ function VideoCall() {
       setScreenAvailable(false)
     }
 
-   
+    //setting status about rear/multiple camera availibility
+    const isAvailable = await rearCamera()
+    setRearCameraAvailable(isAvailable)
 
 
     navigator.mediaDevices.addEventListener('devicechange', configurations)
@@ -218,11 +220,7 @@ function VideoCall() {
 
 
   const getDeviceStreamsSuccess = (stream) => {
-    try {
-      window.localStream.getTracks().forEach((track) => track.stop())
-    } catch (error) {
-      console.log(error)
-    }
+
 
     window.localStream = stream
     localVideoRef.current.srcObject = stream
@@ -320,25 +318,23 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
-        if(front){
-        window.localStream.getTracks().forEach((track) => track.stop())
-        navigator.mediaDevices.getUserMedia({ audio, video: video?{ facingMode: "user" }:video })
-        .then(getDeviceStreamsSuccess)
-        .then((stream) => { })
-        .catch((err) => {
-          console.log(err)
-        })
 
-        }else{
-          window.localStream.getTracks().forEach((track) => track.stop())
-          navigator.mediaDevices.getUserMedia({ audio, video:video?{ facingMode: "environment" }:video })
-          .then(getDeviceStreamsSuccess)
-          .then((stream) => { })
-          .catch((err) => {
-            console.log(err)
-          })
+
+        const constraints = {
+          audio, video: video ?
+            { facingMode: front?"user":"environment" }
+             : video
         }
-       
+
+        window.localStream.getTracks().forEach((track) => track.stop())
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(getDeviceStreamsSuccess)
+            .then((stream) => { })
+            .catch((err) => {
+              console.log(err)
+            })
+
+
       } else {
         console.log("stream deletion occuring")
         window.localStream.getTracks().forEach(track => {
@@ -641,7 +637,7 @@ function VideoCall() {
     if (video !== undefined && audio !== undefined) {
       getDeviceStreams()
     }
-  }, [audio, video,front])
+  }, [audio, video, front])
 
   const getScreenMediaSuccess = (stream) => {
     window.localStream.getTracks().forEach((track) => track.stop())
@@ -740,11 +736,11 @@ function VideoCall() {
     }
   }
 
-  const rearCamera=async ()=>{
+  const rearCamera = async () => {
     const inputDevices = await navigator.mediaDevices.enumerateDevices();
     const cameraDevices = inputDevices.filter((device) => device.kind === "videoinput");
-    console.log(cameraDevices)
-    if (cameraDevices.length > 1) {
+    const isRearAvail = cameraDevices.some((device) => device.label.indexOf("facing back") !== -1)
+    if (isRearAvail) {
       return true;
     } else {
       return false;
@@ -758,29 +754,11 @@ function VideoCall() {
     }
   }, [screen])
 
-  
-
-  useEffect(()=>{
-    const getRearCameraStatus=async ()=>{
-      const isAvailable=await rearCamera()
-      setRearCameraAvailable(isAvailable)
-    }
-    getRearCameraStatus()
-  },[])
-
-  // useEffect(() => {
-  //   if (front !== 1) {
-  //     getRearCamera()
-  //   }
-  // }, [front])
-
-
   const getMedia = async () => {
     setVideo(videoAvailable)
     setAudio(audioAvailable)
     connectToSocketServer()
   }
-
 
   const connect = async () => {
     await getMedia()
@@ -958,7 +936,7 @@ function VideoCall() {
                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
               </IconButton>
             )}
-            {rearCameraAvailable&&(
+            {rearCameraAvailable && (
               <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
                 <FlipCameraAndroidIcon />
               </IconButton>
