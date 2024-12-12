@@ -221,6 +221,8 @@ function VideoCall() {
 
   const getDeviceStreamsSuccess = (stream) => {
 
+    window.localStream.getTracks().forEach((track) => track.stop())
+
     window.localStream = stream
     localVideoRef.current.srcObject = stream
 
@@ -319,8 +321,6 @@ function VideoCall() {
       if (video && videoAvailable || audio && audioAvailable) {
 
         window.localStream.getTracks().forEach((track) => track.stop())
-        localVideoRef.current.srcObject.getTracks().forEach((track) => track.stop())
-
 
         if (front) {
           navigator.mediaDevices.getUserMedia({ audio, video: video ? { facingMode: "user" } : video })
