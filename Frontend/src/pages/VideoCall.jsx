@@ -220,8 +220,7 @@ function VideoCall() {
 
 
   const getDeviceStreamsSuccess = (stream) => {
-    window.localStream.getTracks().forEach((track) => track.stop())
-    
+
 
     window.localStream = stream
     localVideoRef.current.srcObject = stream
@@ -315,32 +314,28 @@ function VideoCall() {
 
   }
 
-  const getDeviceStreams = () => {
+  const getDeviceStreams = async () => {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
 
+       await window.localStream.getTracks().forEach((track) => track.stop())
 
-        if (front) {
-        window.localStream.getTracks().forEach((track) => track.stop())
+        // await new Promise((resolve) => setTimeout(resolve, 100));
 
-          navigator.mediaDevices.getUserMedia({ audio, video: video ? { facingMode: "user" } : video })
-            .then(getDeviceStreamsSuccess)
-            .then((stream) => { })
-            .catch((err) => {
-              console.log(err)
-            })
-
-        } else {
-        window.localStream.getTracks().forEach((track) => track.stop())
-
-          navigator.mediaDevices.getUserMedia({ audio, video: video ? { facingMode: "environment" } : video })
-            .then(getDeviceStreamsSuccess)
-            .then((stream) => { })
-            .catch((err) => {
-              console.log(err)
-            })
+        const constraints = {
+          audio, video: video ?
+            { facingMode: front?"user":"environment" }
+             : video
         }
+
+          navigator.mediaDevices.getUserMedia(constraints)
+            .then(getDeviceStreamsSuccess)
+            .then((stream) => { })
+            .catch((err) => {
+              console.log(err)
+            })
+
 
       } else {
         console.log("stream deletion occuring")
@@ -746,7 +741,7 @@ function VideoCall() {
   const rearCamera = async () => {
     const inputDevices = await navigator.mediaDevices.enumerateDevices();
     const cameraDevices = inputDevices.filter((device) => device.kind === "videoinput");
-    const isRearAvail=cameraDevices.some((device)=>device.label.indexOf("facing back")!==-1)
+    const isRearAvail = cameraDevices.some((device) => device.label.indexOf("facing back") !== -1)
     if (isRearAvail) {
       return true;
     } else {
