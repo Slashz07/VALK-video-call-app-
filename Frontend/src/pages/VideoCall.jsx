@@ -741,8 +741,8 @@ function VideoCall() {
   const rearCamera = async () => {
     const inputDevices = await navigator.mediaDevices.enumerateDevices();
     const cameraDevices = inputDevices.filter((device) => device.kind === "videoinput");
-    console.log("camera devices available: ",cameraDevices)
-    if (cameraDevices.length > 1) {
+    const isRearAvail=cameraDevices.some((device)=>device.label.indexOf("facing back")===1)
+    if (isRearAvail) {
       return true;
     } else {
       return false;
