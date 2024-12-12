@@ -320,12 +320,23 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
-        navigator.mediaDevices.getUserMedia({ video, audio })
+        if(front){
+        navigator.mediaDevices.getUserMedia({ audio, video: video?{ facingMode: "user" }:video })
+        .then(getDeviceStreamsSuccess)
+        .then((stream) => { })
+        .catch((err) => {
+          console.log(err)
+        })
+
+        }else{
+          navigator.mediaDevices.getUserMedia({ audio, video:video?{ facingMode: "environment" }:video })
           .then(getDeviceStreamsSuccess)
           .then((stream) => { })
           .catch((err) => {
             console.log(err)
           })
+        }
+       
       } else {
         console.log("stream deletion occuring")
         window.localStream.getTracks().forEach(track => {
@@ -628,7 +639,7 @@ function VideoCall() {
     if (video !== undefined && audio !== undefined) {
       getDeviceStreams()
     }
-  }, [audio, video])
+  }, [audio, video,front])
 
   const getScreenMediaSuccess = (stream) => {
     window.localStream.getTracks().forEach((track) => track.stop())
@@ -755,11 +766,11 @@ function VideoCall() {
     getRearCameraStatus()
   },[])
 
-  useEffect(() => {
-    if (front !== 1) {
-      getRearCamera()
-    }
-  }, [front])
+  // useEffect(() => {
+  //   if (front !== 1) {
+  //     getRearCamera()
+  //   }
+  // }, [front])
 
 
   const getMedia = async () => {
@@ -781,69 +792,6 @@ function VideoCall() {
     setMessage("")
   }
 
- 
-
-  // Handle rear camera flip ------->
-  const getRearCameraSuccess = (stream) => {
-
-    window.localStream.getTracks().forEach((track) => track.stop())
-
-    window.localStream = stream
-    localVideoRef.current.srcObject = window.localStream
-
-    for (const id in connections) {
-      if (id === socketIdRef.current) continue
-
-      if (connections[id]) {
-        const senders = connections[id].getSenders();
-        senders.forEach((sender) => {
-          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
-            connections[id].removeTrack(sender);
-          }
-        });
-      }
-
-      try {
-        const mediaOrder = ["audio", "video"];
-        mediaOrder.forEach((type) => {
-          const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
-          tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
-        });
-      } catch (error) {
-        console.log(error)
-      }
-
-      connections[id].createOffer().then((description) => {
-        connections[id].setLocalDescription(description).then(() => {
-          socketRef.current.emit("signal", id, JSON.stringify({ sdp: connections[id].localDescription }))
-        }).catch((err) => console.log(err))
-      }).catch((err) => console.log(err))
-
-    }
-
-  }
-
-  const getRearCamera = () => {
-    try {
-      console.log("showFront: ", front)
-      if (!front) {
-        navigator.mediaDevices.getUserMedia({ audio, video: { facingMode: "environment" } }).then(getRearCameraSuccess)
-      } else {
-        window.localStream.getTracks().forEach((track) => track.stop())
-        const blackSilence = (...args) => (
-          new MediaStream([black(...args), silence()])
-        )
-        window.localStream = blackSilence();
-        localVideoRef.current.srcObject = window.localStream
-
-        getDeviceStreams()
-
-      }
-    } catch (error) {
-      console.log("Error in rear camera flip: ", error)
-    }
-
-  }
 
   const endCall = () => {
     try {
