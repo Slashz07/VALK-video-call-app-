@@ -60,7 +60,7 @@ function VideoCall() {
   const [videoPermission, setVideoPermission] = useState(false)
   const [audioPermission, setAudioPermission] = useState(false)
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
-  const [front, setFront] = useState(true);
+  const [front, setFront] = useState(1);
   const [rearCameraAvailable,setRearCameraAvailable]=useState(false)
   const navigate = useNavigate()
 
@@ -320,7 +320,7 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio })
+        navigator.mediaDevices.getUserMedia({ video, audio })
           .then(getDeviceStreamsSuccess)
           .then((stream) => { })
           .catch((err) => {
@@ -756,7 +756,7 @@ function VideoCall() {
   },[])
 
   useEffect(() => {
-    if (front != undefined) {
+    if (front !== 1) {
       getRearCamera()
     }
   }, [front])
@@ -786,7 +786,7 @@ function VideoCall() {
   // Handle rear camera flip ------->
   const getRearCameraSuccess = (stream) => {
 
-    stream.getTracks().forEach((track) => track.stop())
+    window.localStream.getTracks().forEach((track) => track.stop())
 
     window.localStream = stream
     localVideoRef.current.srcObject = window.localStream
@@ -821,7 +821,6 @@ function VideoCall() {
 
     }
 
-    setFront(!front);
   }
 
   const getRearCamera = () => {
@@ -1009,7 +1008,7 @@ function VideoCall() {
                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
               </IconButton>
             )}
-            {rearCameraAvailable && (
+            {rearCameraAvailable&&(
               <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
                 <FlipCameraAndroidIcon />
               </IconButton>
