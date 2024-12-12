@@ -314,18 +314,11 @@ function VideoCall() {
 
   }
 
-  const getDeviceStreams = async () => {
+  const getDeviceStreams = () => {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
 
-        window.localStream.getTracks().forEach((track) => track.stop())
-        window.localStream=null;
-        const videoTracks = localVideoRef.current.srcObject.getTracks();
-        videoTracks.forEach((track) => track.stop());
-        localVideoRef.current.srcObject = null;
-
-        await new Promise((resolve) => setTimeout(resolve, 100));
 
         const constraints = {
           audio, video: video ?
@@ -333,14 +326,14 @@ function VideoCall() {
              : video
         }
 
+        window.localStream.getTracks().forEach((track) => track.stop()).then(
           navigator.mediaDevices.getUserMedia(constraints)
-            .then(getDeviceStreamsSuccess)
-            .then((stream) => { })
-            .catch((err) => {
-              console.log(err)
-            })
-
-
+          .then(getDeviceStreamsSuccess)
+          .then((stream) => { })
+          .catch((err) => {
+            console.log(err)
+          })
+        )
       } else {
         console.log("stream deletion occuring")
         window.localStream.getTracks().forEach(track => {
