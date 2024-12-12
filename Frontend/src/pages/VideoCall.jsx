@@ -9,7 +9,8 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
 import VideoOnIcon from '@mui/icons-material/Videocam';
-import VideoOffIcon from '@mui/icons-material/VideocamOff'
+import VideoOffIcon from '@mui/icons-material/VideocamOff';
+import FlipCameraAndroidIcon from '@mui/icons-material/FlipCameraAndroid';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Typography, IconButton, Badge, ListItem, List, ListItemText } from '@mui/material';
 import NavigationBar from '../Utils/NavigationBar';
@@ -59,7 +60,8 @@ function VideoCall() {
   const [videoPermission, setVideoPermission] = useState(false)
   const [audioPermission, setAudioPermission] = useState(false)
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
-  const [twoUserStyle, setTwoUserStyle] = useState({})
+  const [front, setFront] = useState(true);
+  const [rearCameraAvailable,setRearCameraAvailable]=useState(false)
   const navigate = useNavigate()
 
 
@@ -121,6 +123,9 @@ function VideoCall() {
     } else {
       setScreenAvailable(false)
     }
+
+   
+
 
     navigator.mediaDevices.addEventListener('devicechange', configurations)
 
@@ -315,7 +320,7 @@ function VideoCall() {
     try {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
-        navigator.mediaDevices.getUserMedia({ video, audio })
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio })
           .then(getDeviceStreamsSuccess)
           .then((stream) => { })
           .catch((err) => {
@@ -467,7 +472,7 @@ function VideoCall() {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
 
           connections[socketId].onicecandidate = (event) => {
-            if (event.candidate !== null) { 
+            if (event.candidate !== null) {
               socketRef.current.emit("signal", socketId, JSON.stringify({ ice: event.candidate }));
             }
           };
@@ -722,11 +727,39 @@ function VideoCall() {
     }
   }
 
+  const rearCamera=async ()=>{
+    const inputDevices = await navigator.mediaDevices.enumerateDevices();
+    const cameraDevices = inputDevices.filter((device) => device.kind === "videoinput");
+    console.log(cameraDevices)
+    if (cameraDevices.length > 1) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
   useEffect(() => {
     if (screen != undefined) {
       getScreenMedia()
     }
   }, [screen])
+
+  
+
+  useEffect(()=>{
+    const getRearCameraStatus=async ()=>{
+      const isAvailable=await rearCamera()
+      setRearCameraAvailable(isAvailable)
+    }
+    getRearCameraStatus()
+  },[])
+
+  useEffect(() => {
+    if (front != undefined) {
+      getRearCamera()
+    }
+  }, [front])
 
 
   const getMedia = async () => {
@@ -746,6 +779,71 @@ function VideoCall() {
     console.log("sending mesage");
     socketRef.current.emit("chat-message", message, username)
     setMessage("")
+  }
+
+ 
+
+  // Handle rear camera flip ------->
+  const getRearCameraSuccess = (stream) => {
+
+    stream.getTracks().forEach((track) => track.stop())
+
+    window.localStream = stream
+    localVideoRef.current.srcObject = window.localStream
+
+    for (const id in connections) {
+      if (id === socketIdRef.current) continue
+
+      if (connections[id]) {
+        const senders = connections[id].getSenders();
+        senders.forEach((sender) => {
+          if (sender.track && !window.localStream.getTracks().includes(sender.track)) {
+            connections[id].removeTrack(sender);
+          }
+        });
+      }
+
+      try {
+        const mediaOrder = ["audio", "video"];
+        mediaOrder.forEach((type) => {
+          const tracks = window.localStream.getTracks().filter((track) => track.kind === type);
+          tracks.forEach((track) => connections[id].addTrack(track, window.localStream));
+        });
+      } catch (error) {
+        console.log(error)
+      }
+
+      connections[id].createOffer().then((description) => {
+        connections[id].setLocalDescription(description).then(() => {
+          socketRef.current.emit("signal", id, JSON.stringify({ sdp: connections[id].localDescription }))
+        }).catch((err) => console.log(err))
+      }).catch((err) => console.log(err))
+
+    }
+
+    setFront(!front);
+  }
+
+  const getRearCamera = () => {
+    try {
+      console.log("showFront: ", front)
+      if (!front) {
+        navigator.mediaDevices.getUserMedia({ audio, video: { facingMode: "environment" } }).then(getRearCameraSuccess)
+      } else {
+        window.localStream.getTracks().forEach((track) => track.stop())
+        const blackSilence = (...args) => (
+          new MediaStream([black(...args), silence()])
+        )
+        window.localStream = blackSilence();
+        localVideoRef.current.srcObject = window.localStream
+
+        getDeviceStreams()
+
+      }
+    } catch (error) {
+      console.log("Error in rear camera flip: ", error)
+    }
+
   }
 
   const endCall = () => {
@@ -784,7 +882,7 @@ function VideoCall() {
                   className="username-input"
                   InputProps={{
                     style: {
-                      borderRadius: 0, 
+                      borderRadius: 0,
                     },
                   }}
                 />
@@ -827,11 +925,11 @@ function VideoCall() {
                             <div key={index} className="userChat">
                               <ListItem>
                                 <ListItemText
-                                 primary={msg.sender}
-                                 secondary={msg.data}
+                                  primary={msg.sender}
+                                  secondary={msg.data}
                                 />
                               </ListItem>
-                              
+
                             </div>
                           ) : (
                             <div key={index} className="myChat">
@@ -909,6 +1007,11 @@ function VideoCall() {
             {screenAvailable && (
               <IconButton onClick={() => setScreen(!screen)} style={{ color: "white" }}>
                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+              </IconButton>
+            )}
+            {rearCameraAvailable && (
+              <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
+                <FlipCameraAndroidIcon />
               </IconButton>
             )}
             <Badge style={{ overflow: "visible" }} badgeContent={unseenMessages} max={999} color="primary">
