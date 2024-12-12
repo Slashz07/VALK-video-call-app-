@@ -326,14 +326,14 @@ function VideoCall() {
              : video
         }
 
-        window.localStream.getTracks().forEach((track) => track.stop()).then(
-          navigator.mediaDevices.getUserMedia(constraints)
-          .then(getDeviceStreamsSuccess)
-          .then((stream) => { })
-          .catch((err) => {
-            console.log(err)
-          })
-        )
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(getDeviceStreamsSuccess)
+            .then((stream) => { })
+            .catch((err) => {
+              console.log(err)
+            })
+
+
       } else {
         console.log("stream deletion occuring")
         window.localStream.getTracks().forEach(track => {
@@ -634,6 +634,7 @@ function VideoCall() {
 
   useEffect(() => {
     if (video !== undefined && audio !== undefined) {
+      window.localStream.getTracks().forEach((track) => track.stop())
       getDeviceStreams()
     }
   }, [audio, video, front])
