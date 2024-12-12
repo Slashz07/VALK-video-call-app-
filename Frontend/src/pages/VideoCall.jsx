@@ -321,6 +321,7 @@ function VideoCall() {
       console.log("getDeviceStreams has been called")
       if (video && videoAvailable || audio && audioAvailable) {
         if(front){
+        window.localStream.getTracks().forEach((track) => track.stop())
         navigator.mediaDevices.getUserMedia({ audio, video: video?{ facingMode: "user" }:video })
         .then(getDeviceStreamsSuccess)
         .then((stream) => { })
@@ -329,6 +330,7 @@ function VideoCall() {
         })
 
         }else{
+          window.localStream.getTracks().forEach((track) => track.stop())
           navigator.mediaDevices.getUserMedia({ audio, video:video?{ facingMode: "environment" }:video })
           .then(getDeviceStreamsSuccess)
           .then((stream) => { })
