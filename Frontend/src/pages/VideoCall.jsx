@@ -61,7 +61,7 @@ function VideoCall() {
   const [audioPermission, setAudioPermission] = useState(false)
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
   const [front, setFront] = useState(1);
-  const [rearCameraAvailable, setRearCameraAvailable] = useState(false)
+  const [rearCameraAvailable,setRearCameraAvailable]=useState(false)
   const navigate = useNavigate()
 
 
@@ -124,9 +124,7 @@ function VideoCall() {
       setScreenAvailable(false)
     }
 
-    //setting status about rear/multiple camera availibility
-    const isAvailable = await rearCamera()
-    setRearCameraAvailable(isAvailable)
+   
 
 
     navigator.mediaDevices.addEventListener('devicechange', configurations)
@@ -220,7 +218,6 @@ function VideoCall() {
 
 
   const getDeviceStreamsSuccess = (stream) => {
-
 
     window.localStream = stream
     localVideoRef.current.srcObject = stream
@@ -640,7 +637,7 @@ function VideoCall() {
     if (video !== undefined && audio !== undefined) {
       getDeviceStreams()
     }
-  }, [audio, video, front])
+  }, [audio, video,front])
 
   const getScreenMediaSuccess = (stream) => {
     window.localStream.getTracks().forEach((track) => track.stop())
@@ -739,11 +736,11 @@ function VideoCall() {
     }
   }
 
-  const rearCamera = async () => {
+  const rearCamera=async ()=>{
     const inputDevices = await navigator.mediaDevices.enumerateDevices();
     const cameraDevices = inputDevices.filter((device) => device.kind === "videoinput");
-    const isRearAvail = cameraDevices.some((device) => device.label.indexOf("facing back") !== -1)
-    if (isRearAvail) {
+    console.log(cameraDevices)
+    if (cameraDevices.length > 1) {
       return true;
     } else {
       return false;
@@ -757,11 +754,29 @@ function VideoCall() {
     }
   }, [screen])
 
+  
+
+  useEffect(()=>{
+    const getRearCameraStatus=async ()=>{
+      const isAvailable=await rearCamera()
+      setRearCameraAvailable(isAvailable)
+    }
+    getRearCameraStatus()
+  },[])
+
+  // useEffect(() => {
+  //   if (front !== 1) {
+  //     getRearCamera()
+  //   }
+  // }, [front])
+
+
   const getMedia = async () => {
     setVideo(videoAvailable)
     setAudio(audioAvailable)
     connectToSocketServer()
   }
+
 
   const connect = async () => {
     await getMedia()
@@ -939,7 +954,7 @@ function VideoCall() {
                 {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
               </IconButton>
             )}
-            {rearCameraAvailable && (
+            {rearCameraAvailable&&(
               <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
                 <FlipCameraAndroidIcon />
               </IconButton>
