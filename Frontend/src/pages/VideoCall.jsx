@@ -684,7 +684,6 @@ function VideoCall() {
     window.localStream.getTracks().forEach(track => {
       track.onended = () => {
         setScreen(false)
-        console.log("onended is called")
         try {
           localVideoRef.current.srcObject.getTracks().forEach((track => track.stop()))
         } catch (error) {
