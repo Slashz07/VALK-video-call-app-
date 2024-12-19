@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { TextField, Typography, IconButton, Badge, ListItem, List, ListItemText } from '@mui/material';
 import NavigationBar from '../Utils/NavigationBar';
 import isBackendProd from '../Environment';
+import { useSelector } from 'react-redux';
 
 const server_url = isBackendProd(true)
 
@@ -42,6 +43,7 @@ function VideoCall() {
 
   const [videoAvailable, setVideoAvailable] = useState(false)
   const [audioAvailable, setAudioAvailable] = useState(false)
+  const [nameError, setNameError] = useState(false)
 
   const [video, setVideo] = useState()
   const [audio, setAudio] = useState()
@@ -62,6 +64,8 @@ function VideoCall() {
   const [videoSize, setVideoSize] = useState({ maxWidth: '45%' })
   const [front, setFront] = useState(1);
   const [rearCameraAvailable, setRearCameraAvailable] = useState(false)
+  const isLoggedIn = useSelector((state) => state.auth.status)
+  const userData = useSelector((state) => state.auth.userData)
   const navigate = useNavigate()
 
 
@@ -322,17 +326,17 @@ function VideoCall() {
 
         const constraints = {
           audio, video: video ?
-            { facingMode: front?"user":"environment" }
-             : video
+            { facingMode: front ? "user" : "environment" }
+            : video
         }
 
         window.localStream.getTracks().forEach((track) => track.stop())
         navigator.mediaDevices.getUserMedia(constraints)
-            .then(getDeviceStreamsSuccess)
-            .then((stream) => { })
-            .catch((err) => {
-              console.log(err)
-            })
+          .then(getDeviceStreamsSuccess)
+          .then((stream) => { })
+          .catch((err) => {
+            console.log(err)
+          })
 
 
       } else {
@@ -753,6 +757,12 @@ function VideoCall() {
     }
   }, [screen])
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      setUsername(userData.fullName)
+    }
+  }, [])
+
   const getMedia = async () => {
     setVideo(videoAvailable)
     setAudio(audioAvailable)
@@ -760,8 +770,13 @@ function VideoCall() {
   }
 
   const connect = async () => {
-    await getMedia()
-    setAskUsername(false)
+    if (username !== "") {
+      await getMedia()
+      setAskUsername(false)
+      setNameError("")
+    } else {
+      setNameError("Please provide a name before joining!")
+    }
 
   }
 
@@ -791,164 +806,182 @@ function VideoCall() {
 
   return (
     <div className="video-app">
-      {askUsername === true ? (
-        <div className='lobby-container-parent'>
-          <NavigationBar />
-          <Typography variant="h4" component="h1" className="lobby-title">
-            VALK Lobby
-          </Typography>
-          <div className="lobby-container">
-            <div className="lobby-header">
-              <div className="set-guest-name">
-                <TextField
-                  id="outlined-basic"
-                  label="Enter Username"
-                  variant="outlined"
-                  onChange={(event) => setUsername(event.target.value)}
-                  className="username-input"
-                  InputProps={{
-                    style: {
-                      borderRadius: 0,
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  size="medium"
-                  className="connect-button"
-                  onClick={connect}
-                  sx={{ borderRadius: 0 }}
-                >
-                  Connect
-                </Button>
+      {
+        askUsername === true ? (
+          <div className='lobby-container-parent'>
+            {console.log("lobby ran")}
+            <NavigationBar />
+            <Typography variant="h4" component="h1" className="lobby-title">
+              VALK Lobby
+            </Typography>
+            <div className="lobby-container">
+              <div className="lobby-header">
+                <div className="set-guest-name">
+                  <div style={{
+                    display:"flex",
+                    flexDirection:"column",
+                    gap:"8px"
+                  }}>
+                    {
+                      !isLoggedIn &&
+                      <TextField
+                        id="outlined-basic"
+                        required={true}
+                        label="Enter Username"
+                        variant="outlined"
+                        onChange={(event) => setUsername(event.target.value)}
+                        className="username-input"
+                        InputProps={{
+                          style: {
+                            borderRadius: 0,
+                          },
+                        }}
+                      />
+                    }
+                    {nameError && <div>
+                      <p style={{ color: "red" }}>{nameError}</p>
+
+                    </div>}
+
+                  </div>
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    className="connect-button"
+                    onClick={connect}
+                    sx={{ borderRadius: 0 }}
+                  >
+                    Connect
+                  </Button>
+                </div>
               </div>
+              {localVideoRef && (
+                <div className="video-preview">
+                  <video ref={localVideoRef} autoPlay muted className="local-video"></video>
+                </div>
+              )}
             </div>
-            {localVideoRef && (
-              <div className="video-preview">
-                <video ref={localVideoRef} autoPlay muted className="local-video"></video>
-              </div>
-            )}
           </div>
-        </div>
 
-      ) : (
-        <div className="meetingVideoContainer">
-          {showModal && (
-            <div className="chatRoom">
-              <div className="chatContainer">
-                <h1 style={{
-                  color: "black",
-                  marginTop: "2rem",
-                  textAlign: "center",
-                  marginBottom: "2rem"
-                }}>Chats</h1>
-                <div className="messageBox">
-                  <List>
-                    {messages.length > 0 ? (
-                      messages.map((msg, index) =>
-                        msg.data != "" && (
-                          msg.senderSocketId !== socketIdRef.current ? (
-                            <div key={index} className="userChat">
-                              <ListItem>
-                                <ListItemText
-                                  primary={msg.sender}
-                                  secondary={msg.data}
-                                />
-                              </ListItem>
+        ) : (
+          <div className="meetingVideoContainer">
+            {console.log("video container ran")}
+            {showModal && (
+              <div className="chatRoom">
+                <div className="chatContainer">
+                  <h1 style={{
+                    color: "black",
+                    marginTop: "2rem",
+                    textAlign: "center",
+                    marginBottom: "2rem"
+                  }}>Chats</h1>
+                  <div className="messageBox">
+                    <List>
+                      {messages.length > 0 ? (
+                        messages.map((msg, index) =>
+                          msg.data != "" && (
+                            msg.senderSocketId !== socketIdRef.current ? (
+                              <div key={index} className="userChat">
+                                <ListItem>
+                                  <ListItemText
+                                    primary={msg.sender}
+                                    secondary={msg.data}
+                                  />
+                                </ListItem>
 
-                            </div>
-                          ) : (
-                            <div key={index} className="myChat">
-                              <ListItem>
-                                <ListItemText
-                                  secondary={msg.data}
-                                />
-                              </ListItem>
-                            </div>
+                              </div>
+                            ) : (
+                              <div key={index} className="myChat">
+                                <ListItem>
+                                  <ListItemText
+                                    secondary={msg.data}
+                                  />
+                                </ListItem>
+                              </div>
+                            )
                           )
                         )
-                      )
-                    ) : (
-                      <h2 style={{
-                        marginTop: "15rem",
-                        textAlign: "center"
-                      }}>No messages yet!</h2>
-                    )}
-                  </List>
+                      ) : (
+                        <h2 style={{
+                          marginTop: "15rem",
+                          textAlign: "center"
+                        }}>No messages yet!</h2>
+                      )}
+                    </List>
+                  </div>
+                </div>
+
+                <div className="chatArea">
+                  <TextField
+                    margin="normal"
+                    required
+                    className='enterMsgField'
+                    label="Enter your message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <Button variant="contained" className='msgBtn' onClick={sendMessage}>
+                    Send
+                  </Button>
                 </div>
               </div>
+            )}
 
-              <div className="chatArea">
-                <TextField
-                  margin="normal"
-                  required
-                  className='enterMsgField'
-                  label="Enter your message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                />
-                <Button variant="contained" className='msgBtn' onClick={sendMessage}>
-                  Send
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="videoGrid">
-            <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
-            <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} >
-              {allVideos.map((video) => (
-                <div
-                  className="userVideoFrame"
-                  key={video.socketId}
-                  style={{
-                    maxWidth: videoSize.maxWidth,
-                  }}
-                >
-                  <video
-                    data-socket={video.socketId}
-                    ref={(ref) => {
-                      if (ref && video.stream) {
-                        ref.srcObject = video.stream;
-                      }
+            <div className="videoGrid">
+              <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
+              <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} >
+                {allVideos.map((video) => (
+                  <div
+                    className="userVideoFrame"
+                    key={video.socketId}
+                    style={{
+                      maxWidth: videoSize.maxWidth,
                     }}
-                    autoPlay
-                  ></video>
-                </div>
-              ))}
+                  >
+                    <video
+                      data-socket={video.socketId}
+                      ref={(ref) => {
+                        if (ref && video.stream) {
+                          ref.srcObject = video.stream;
+                        }
+                      }}
+                      autoPlay
+                    ></video>
+                  </div>
+                ))}
+              </div>
+
             </div>
 
+            <div className="buttonContainer">
+              <IconButton onClick={() => setVideo(!video)} style={{ color: "white" }}>
+                {video ? <VideoOnIcon /> : <VideoOffIcon />}
+              </IconButton>
+              <IconButton onClick={endCall} style={{ color: "red" }}>
+                <CallEndIcon />
+              </IconButton>
+              <IconButton onClick={() => setAudio(!audio)} style={{ color: "white" }}>
+                {audio ? <MicIcon /> : <MicOffIcon />}
+              </IconButton>
+              {screenAvailable && (
+                <IconButton onClick={() => setScreen(!screen)} style={{ color: "white" }}>
+                  {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+                </IconButton>
+              )}
+              {rearCameraAvailable && (
+                <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
+                  <FlipCameraAndroidIcon />
+                </IconButton>
+              )}
+              <Badge style={{ overflow: "visible" }} badgeContent={unseenMessages} max={999} color="primary">
+                <IconButton onClick={() => setShowModal(!showModal)} style={{ color: "white" }}>
+                  <ChatIcon />
+                </IconButton>
+              </Badge>
+            </div>
           </div>
 
-          <div className="buttonContainer">
-            <IconButton onClick={() => setVideo(!video)} style={{ color: "white" }}>
-              {video ? <VideoOnIcon /> : <VideoOffIcon />}
-            </IconButton>
-            <IconButton onClick={endCall} style={{ color: "red" }}>
-              <CallEndIcon />
-            </IconButton>
-            <IconButton onClick={() => setAudio(!audio)} style={{ color: "white" }}>
-              {audio ? <MicIcon /> : <MicOffIcon />}
-            </IconButton>
-            {screenAvailable && (
-              <IconButton onClick={() => setScreen(!screen)} style={{ color: "white" }}>
-                {screen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-              </IconButton>
-            )}
-            {rearCameraAvailable && (
-              <IconButton onClick={() => setFront(!front)} style={{ color: "white" }}>
-                <FlipCameraAndroidIcon />
-              </IconButton>
-            )}
-            <Badge style={{ overflow: "visible" }} badgeContent={unseenMessages} max={999} color="primary">
-              <IconButton onClick={() => setShowModal(!showModal)} style={{ color: "white" }}>
-                <ChatIcon />
-              </IconButton>
-            </Badge>
-          </div>
-        </div>
-
-      )
+        )
       }
     </div >
   )
