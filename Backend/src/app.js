@@ -10,6 +10,7 @@ app.use(cors({
     credentials: true, // Allow cookies and credentials
 }));
 app.use(express.json({limit:"40kb"}))
+app.use(express.static('public'));
 app.use(express.urlencoded({limit:"40kb",extended:true}))
 app.use(cookieParser())
 
@@ -17,8 +18,5 @@ app.use(cookieParser())
 
 app.use("/api/v1/users",userRouter)
 
-app.use("/",(req,res,next)=>{
-    res.send("hey")
-    next()
-})
+
 export default app
