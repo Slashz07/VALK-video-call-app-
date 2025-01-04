@@ -17,6 +17,14 @@ const userSchema=new Schema({
     },
     refreshToken:{
         type:String
+    },
+    userImg:{
+        type: String,
+        default:"https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg",
+        set:(img)=>img==="" ? "https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg":img
+    },
+    userImgId:{
+        type:String
     }
 })
 
