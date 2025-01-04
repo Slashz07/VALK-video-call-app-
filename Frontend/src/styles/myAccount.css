@@ -1,0 +1,126 @@
+.container {
+    max-width: 768px;
+    margin: 40px auto 20px;
+    padding: 24px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .center {
+    width: 100%;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .profile-img {
+    border-radius: 50%;
+    width: 128px;
+    height: 128px;
+    object-fit: cover;
+    border: 4px solid #d1d5db;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .remove-btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background-color: #ef4444;
+    color: #ffffff;
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .remove-btn:hover {
+    background-color: #dc2626;
+  }
+  
+  .remove-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #fca5a5;
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    cursor: pointer;
+  }
+  
+  .input-container:hover {
+    border-color: rgba(0, 0, 0, 0.87);
+  }
+  
+  .preview-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
+  }
+  
+  .update-btn {
+    width: 100%;
+    background-color: #3b82f6;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .update-btn:hover {
+    background-color: #2563eb;
+  }
+  
+  .update-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #93c5fd;
+  }
+  
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    width: 150px; /* Adjust to ensure all labels are aligned */
+    text-align: left; /* Align labels to the left */
+    margin-right: 20px; /* Add spacing between label and input */
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.input-container {
+    flex: 1;
+}
+
+.file-input-label {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+input, .profile-img, .preview-img, .update-btn {
+    max-width: 100%; /* Ensure elements don't overflow the container */
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto; /* Center align the form horizontally */
+}
