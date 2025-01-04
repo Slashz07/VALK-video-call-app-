@@ -71,6 +71,15 @@ function NavigationBar() {
                     </div>
                 )}
                 {isLoggedIn && (
+                    <div
+                        className="navIcon"
+                        onClick={() => navigate("/myAccount")}
+                        style={{ cursor: "pointer" }}
+                    >
+                        <p style={{ color: "white" }}>My Account</p>
+                    </div>
+                )}
+                {isLoggedIn && (
                     <button
                         className="logout-button"
                         onClick={async () => {
