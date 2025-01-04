@@ -11,6 +11,7 @@ import VideoCall from './pages/VideoCall.jsx';
 import store from './store/store.js'
 import Home from './pages/Home.jsx'
 import History from './pages/History.jsx'
+import MyAccount from './pages/MyAccount.jsx'
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/signIn",
         element: <Authentication />
+      },
+      {
+        path: "/myAccount",
+        element: <MyAccount />
       },
       {
         path: "/call/:url",
