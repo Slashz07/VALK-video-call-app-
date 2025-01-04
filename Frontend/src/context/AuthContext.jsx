@@ -18,12 +18,12 @@ export const AuthProvider = ({ children }) => {
     const [userData, setUserData] = useState(userContext)
     const dispatch = useDispatch()
 
-    const handleRegister = async (fullName, userName, password) => {
-        try {
-            const request = await client.post("/register", {
-                fullName,
-                userName,
-                password
+    const handleRegister = async (formData) => {
+        try {  
+            const request = await client.post("/register",formData,{
+                headers:{
+                    "Content-Type":"multipart/form-data"
+                },
             })
             console.log(request)
             if (request.data.statusCode === httpStatus.CREATED) {
@@ -90,6 +90,35 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const confirmPassAndUpdate= async (formData)=>{
+        try {
+            const request=await client.post("/myAccount/updateAccount",formData,{
+                headers:{
+                    "Content-Type":"multipart/form-data"
+                },
+            })
+    console.log("requuest: ",request)
+            if(request.data.statusCode===httpStatus.OK){
+                return request.data.data
+            }
+    
+        } catch (error) {
+            throw error
+        }
+    }
+    const deleteAccountImage= async ()=>{
+        try {
+            const request=await client.delete("/myAccount/deleteAccountImage")
+    
+            if(request.data.statusCode===httpStatus.OK){
+                return request.data.data
+            }
+    
+        } catch (error) {
+            throw error
+        }
+    }
+
     const userLogout = async () => {
         try {
             const request = await client.post("/logout")
@@ -102,7 +131,7 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    const data = { userData, setUserData, handleRegister, handleLogin, userLogout, verifyLogin,updateMeetingHistory,getHistory }
+    const data = { userData, setUserData, handleRegister, handleLogin, userLogout, verifyLogin,updateMeetingHistory,confirmPassAndUpdate,deleteAccountImage,getHistory }
     return (
         <AuthContext.Provider value={data}>
             {children}
