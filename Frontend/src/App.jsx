@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from './context/AuthContext'
 import { useDispatch } from 'react-redux'
 import { login, logout } from './reduxFeatures/AuthSlice'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   const { verifyLogin } = useContext(AuthContext)
@@ -29,6 +30,7 @@ function App() {
   return (
     <div className='mainContainer'>
       <div className='mainContent'>
+    <ToastContainer style={{marginTop:"6rem"}}/>
         {console.log(loading)}
         {
           loading ?
