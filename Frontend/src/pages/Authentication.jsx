@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { useForm } from 'react-hook-form'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -21,38 +22,42 @@ import NavigationBar from '../Utils/NavigationBar.jsx';
 const defaultTheme = createTheme();
 
 export default function Authentication() {
-  
-  const [userName,setUserName]=useState("")
-  const [fullName,setFullName]=useState("")
-  const [password,setPassword]=useState("")
-  const [error,setError]=useState("")
-  const [message,setMessage]=useState("")
-  const [formState,setFormState]=useState("signIn")
-  const [open,setOpen]=useState(false)
+
+  const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
+  const [formState, setFormState] = useState("signIn")
+  const [open, setOpen] = useState(false)
+  const [file, setFile] = useState("")
+  const [fileUrl, setFileUrl] = useState("")
+
+  const { handleSubmit, register } = useForm()
 
 
-  const {handleRegister,handleLogin}=useContext(AuthContext)
-  const navigate=useNavigate()
+  const { handleRegister, handleLogin } = useContext(AuthContext)
+  const navigate = useNavigate()
 
-  const handleAuth=async()=>{
+  const handleAuth = async (data) => {
     try {
       setError("")
-
-      if(formState==="signIn"){
-        let result=await handleLogin(userName,password)
+      console.log(data)
+      if (formState === "signIn") {
+        let result = await handleLogin(data.userName, data.password)
         setMessage(result)
         setOpen(true)
         navigate("/home")
       }
-      if(formState==="signUp"){
-        let result=await handleRegister(fullName,userName,password)
+      if (formState === "signUp") {
+        const formData = new FormData()
+        file&&formData.append("file", file)
+        formData.append("fullName", data.fullName)
+        formData.append("userName", data.userName)
+        formData.append("password", data.password)
+        // console.log("formdata: ",formData)
+        let result = await handleRegister(formData)
         setMessage(result)
         setOpen(true)
         navigate("/home")
       }
-
-      setUserName("")
-      setPassword("")
 
     } catch (error) {
       console.log(error)
@@ -60,110 +65,177 @@ export default function Authentication() {
     }
   }
 
+  const onFileUpload = (event) => {
+    const file = event.target.files[0]
+    setFile(file)
+    const url = URL.createObjectURL(file)
+    setFileUrl(url)
+  }
+
   return (
     <>
-    <NavigationBar/>
-    <div style={{marginTop:"7vh"}}>
-    <ThemeProvider  theme={defaultTheme}>
-      <Grid container component="main" sx={{ height: '89vh' }}>
-        <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage:
-              'url("/signInImage.jpg")',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'contain',
-            backgroundPosition: 'left',
-            backgroundRepeat:"no-repeat"
-          }}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <LockOutlinedIcon />
-            </Avatar>
-       <div>
-        <Button variant={formState==="signIn"?"contained":""} 
-          onClick={()=>{
-            setError("")
-            setPassword("")
-            setFormState("signIn")}
-          }>
-          Sign In
-        </Button>
-        <Button variant={formState==="signUp"?"contained":""}
-         onClick={()=>{
-          setError("")
-          setPassword("")
-          setFormState("signUp")}
-          }>
-          Sign Up
-        </Button>
-       </div>
-            <Box component="form" noValidate sx={{ mt: 1 }}>
-              {formState=="signUp"&&<TextField
-                margin="normal"
-                required
-                fullWidth
-                id="fullName"
-                label="Full Name"
-                name="fullName"
-                value={fullName}
-                autoFocus
-                onChange={(e)=>setFullName(e.target.value)}
-              />
-              }
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="userName"
-                label="userName"
-                name="userName"
-                value={userName}
-                autoFocus
-                onChange={(e)=>setUserName(e.target.value)}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                value={password}
-                id="password"
-                onChange={(e)=>setPassword(e.target.value)}
-              />
-
-              <p style={{color:"red"}}>{error}</p>
-
-              <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                onClick={handleAuth}
+      <NavigationBar />
+      <div style={{ marginTop: "7vh" }}>
+        <ThemeProvider theme={defaultTheme}>
+          <Grid container component="main" sx={{ height: '89vh' }}>
+            <CssBaseline />
+            <Grid
+              item
+              xs={false}
+              sm={4}
+              md={7}
+              sx={{
+                backgroundImage:
+                  'url("/signInImage.jpg")',
+                backgroundColor: (t) =>
+                  t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+                backgroundSize: 'contain',
+                backgroundPosition: 'left',
+                backgroundRepeat: "no-repeat"
+              }}
+            />
+            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+              <Box
+                sx={{
+                  my: 8,
+                  mx: 4,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
               >
-               {formState=="signIn"?"LOGIN":"REGISTER"}
-              </Button>
+                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                  <LockOutlinedIcon />
+                </Avatar>
+                <div>
+                  <Button variant={formState === "signIn" ? "contained" : ""}
+                    onClick={() => {
+                      setError("")
+                      setFormState("signIn")
+                    }
+                    }>
+                    Sign In
+                  </Button>
+                  <Button variant={formState === "signUp" ? "contained" : ""}
+                    onClick={() => {
+                      setError("")
+                      setFormState("signUp")
+                    }
+                    }>
+                    Sign Up
+                  </Button>
+                </div>
+                <form onSubmit={handleSubmit(handleAuth)}>
+                  <Box noValidate sx={{ mt: 1 }}>
+                    {formState == "signUp" &&
+                      <div>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="fullName"
+                          label="Full Name"
+                          name="fullName"
+                          {...register("fullName", {
+                            required: true
+                          })}
+                          autoFocus
+                        />
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid rgba(0, 0, 0, 0.23)',
+                            borderRadius: '4px',
+                            padding: '10px 14px',
+                            marginTop: '8px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              borderColor: 'rgba(0, 0, 0, 0.87)',
+                            },
+                          }}
+                        >
+                          <input
+                            type="file"
+                            accept="image/jpg,image/png,image/jpeg,image/gif"
+                            name="image"
+                            {...register("image", { required: false })}
+                            style={{
+                              display: 'none',
+                            }}
+                            id="fileInput"
+                            onChange={onFileUpload}
+                          />
+                          <label htmlFor="fileInput" style={{ flex: 1, cursor: 'pointer' }}>
+                            {file.name || 'Set Profile Pic'}
+                          </label>
+                          {fileUrl && (
+                            <Box
+                              sx={{
+                                marginTop: '10px',
+                                marginLeft: "5px",
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <img
+                                src={fileUrl}
+                                alt="Preview"
+                                style={{
+                                  width: '100px',
+                                  height: '100px',
+                                  objectFit: 'cover',
+                                  borderRadius: '4px',
+                                  border: '1px solid rgba(0, 0, 0, 0.23)',
+                                }}
+                              />
+                            </Box>
+                          )}
+                        </Box>
 
-              {/* For future upgradation --> */}
+                      </div>
 
-              {/* <Grid container>
+                    }
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="userName"
+                      label="userName"
+                      name="userName"
+                      {...register("userName", {
+                        required: true
+                      })}
+                      autoFocus
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="password"
+                      {...register("password", {
+                        required: true
+                      })}
+                      label="Password"
+                      type="password"
+                      id="password"
+                    />
+
+                    <p style={{ color: "red" }}>{error}</p>
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 3, mb: 2 }}
+                    >
+                      {formState == "signIn" ? "LOGIN" : "REGISTER"}
+                    </Button>
+
+                    {/* For future upgradation --> */}
+
+                    {/* <Grid container>
                 <Grid item xs>
                   <Link href="#" variant="body2">
                     Forgot password?
@@ -175,21 +247,22 @@ export default function Authentication() {
                   </Link>
                 </Grid>
               </Grid> */}
-            </Box>
-          </Box>
-        </Grid>
-      </Grid>
+                  </Box>
+                </form>
+              </Box>
+            </Grid>
+          </Grid>
 
-       {error==="" && <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        onClose={()=>setOpen(false)}
-        message={message}
-        />}
+          {error === "" && <Snackbar
+            open={open}
+            autoHideDuration={2000}
+            onClose={() => setOpen(false)}
+            message={message}
+          />}
 
-    </ThemeProvider>
-    
-    </div>
+        </ThemeProvider>
+
+      </div>
     </>
   );
 }
