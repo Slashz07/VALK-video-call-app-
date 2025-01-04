@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { login, logout, refreshAccessToken, register,getCurrentUser,getUserHistory, updateMeetingHistory } from "../controllers/user.controller.js";
+import { login, logout, refreshAccessToken, register,getCurrentUser,getUserHistory, updateMeetingHistory, updateUserAccount, deleteAccountImg } from "../controllers/user.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router=Router()
 
 router.route("/register").post(
+    upload.single("file"),
     register
 )
 router.route("/login").post(
@@ -25,6 +27,17 @@ router.route("/addMeeting").post(
     verifyJwt,
     updateMeetingHistory
 )
+
+router.route("/myAccount/updateAccount").post(
+    verifyJwt,
+    upload.single("file"),
+    updateUserAccount
+)
+router.route("/myAccount/deleteAccountImage").delete(
+    verifyJwt,
+    deleteAccountImg
+)
+
 router.route("/logout").post(
     verifyJwt,
     logout
