@@ -148,7 +148,8 @@ function VideoCall() {
       setAudioAvailable(false)
     }
 
-    console.log("navigator.mediaDevices.getDisplayMedia: ",navigator.mediaDevices.getDisplayMedia)
+    console.log("navigator: ",navigator)
+    console.log("navigator.mediaDevices",navigator.mediaDevices)
     if (navigator.mediaDevices.getDisplayMedia) {
       setScreenAvailable(true)
     } else {
