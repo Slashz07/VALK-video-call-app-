@@ -19,7 +19,7 @@ export const connectToSocket = (server) => {
 
         console.log("connection made on socketIo server")
 
-        socket.on("join-call", (path) => {
+        socket.on("join-call", ({path,userName}) => {
             console.log("reached join call")
             if (connections[path] === undefined) {
                 connections[path] = []
@@ -31,7 +31,7 @@ export const connectToSocket = (server) => {
             // console.log(connections[path]+"\n",path)
             connections[path].forEach(socketId => {
                 // console.log(socket.id)
-                io.to(socketId).emit("user-joined", socket.id, connections[path])
+                io.to(socketId).emit("user-joined", socket.id, connections[path],userName)
             });
 
             if (messages[path] !== undefined) {
