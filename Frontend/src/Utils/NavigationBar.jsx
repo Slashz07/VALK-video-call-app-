@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { AuthContext } from '../context/AuthContext';
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import { Snackbar } from '@mui/material';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function NavigationBar() {
 
@@ -19,6 +20,32 @@ function NavigationBar() {
     const location = useLocation()
     const [isCollapsed, setIsCollapsed] = useState(false);
     const toggleMenu = () => setIsCollapsed(!isCollapsed);
+
+    // Toastify configuration--->
+      const notify = (type,msg="") => {
+    
+        toast.dismiss();
+    
+        if (type === 'inProgress') {
+          toast.info(msg!=""?msg:'Work in Progress...', {
+            position: "top-center",
+            autoClose: false, 
+            hideProgressBar: true,
+          });
+        } else if (type === 'success') {
+          toast.success(msg!=""?msg:'Operation Successful!', {
+            position: "top-center",
+          });
+        } else if (type === '') {
+          toast(msg!=""?msg:'Operation Successful!', {
+            position: "top-center",
+          });
+        } else if (type === 'error') {
+          toast.error(msg!=""?msg:'An error occurred!', {
+            position: "top-center",
+          });
+        }
+      };
 
     const getRandomCode = () => {
         let code = crypto.randomUUID().slice(0, Math.floor(Math.random() * 6) + 5)
@@ -86,8 +113,7 @@ function NavigationBar() {
                             try {
                                 setError("")
                                 const msg = await userLogout()
-                                setMessage(msg)
-                                setOpen(true)
+                                notify("",msg)
                                 navigate("/")
 
                             } catch (error) {
@@ -102,28 +128,6 @@ function NavigationBar() {
 
 
             </div>
-            {error === "" ? <Snackbar
-                    open={open}
-                    autoHideDuration={2000}
-                    onClose={() => {
-                        setOpen(false)
-                    }}
-                    message={message}
-                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-
-                /> : <Snackbar
-                    open={open}
-                    autoHideDuration={2000}
-                    onClose={() => {
-                        setOpen(false)
-                    }}
-                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                >
-                    <Alert severity={"error"} sx={{ width: "100%" }}>
-                        {message}
-                    </Alert>
-                </Snackbar>
-                }
             {/* Hamburger Menu */}
             <div className="hamburgerMenu" onClick={toggleMenu}>
                 {isCollapsed ? <CloseIcon style={{ color: "white" }} /> : <MenuIcon style={{ color: "white" }} />}
