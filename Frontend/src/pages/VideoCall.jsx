@@ -489,8 +489,8 @@ function VideoCall() {
     }
   }
 
-  const connectToSocketServer = () => {
-    socketRef.current = io.connect(server_url, { secure: false,query:{userName:userData.userName} })
+  const connectToSocketServer = (altUsername="") => {
+    socketRef.current = io.connect(server_url, { secure: false,query:{userName:userData?userData.userName:(username?username:altUsername)} })
 
     socketRef.current.on("signal", messageFromServer)
 
@@ -795,19 +795,20 @@ function VideoCall() {
     }
   }, [])
 
-  const getMedia = async () => {
+  const getMedia = async (altUsername="") => {
     setVideo(videoAvailable)
     setAudio(audioAvailable)
-    connectToSocketServer()
+    connectToSocketServer(altUsername)
   }
+
 
   const connect = async () => {
     if (username !== "") {
       await getMedia()
-      setAskUsername(false)
-      setNameError("")
     } else {
-      setNameError("Please provide a name before joining!")
+      let altUsername=getRandomName()
+      await getMedia(altUsername)
+      console.log("no username alternate ran")
     }
 
   }

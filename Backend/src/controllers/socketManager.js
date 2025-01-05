@@ -18,7 +18,7 @@ export const connectToSocket = (server) => {
     io.on("connection", (socket) => {
 
         console.log("connection made on socketIo server")
-        let userName=socket.handshake.query.userName
+        let userName=socket.handshake?.query?.userName
 
         socket.on("join-call", ({path}) => {
             console.log("reached join call")
