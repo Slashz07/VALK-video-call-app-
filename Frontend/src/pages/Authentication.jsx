@@ -14,10 +14,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthContext } from '../context/AuthContext.jsx';
-import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import "../App.css"
 import NavigationBar from '../Utils/NavigationBar.jsx';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const defaultTheme = createTheme();
 
@@ -36,26 +37,47 @@ export default function Authentication() {
   const { handleRegister, handleLogin } = useContext(AuthContext)
   const navigate = useNavigate()
 
+  // Toastify configuration--->
+  const notify = (type,msg="") => {
+
+    toast.dismiss();
+
+    if (type === 'inProgress') {
+      toast.info(msg!=""?msg:'Work in Progress...', {
+        position: "top-center",
+        autoClose: false, 
+        hideProgressBar: true,
+      });
+    } else if (type === 'success') {
+      toast.success(msg!=""?msg:'Operation Successful!', {
+        position: "top-center",
+      });
+    } else if (type === 'error') {
+      toast.error(msg!=""?msg:'An error occurred!', {
+        position: "top-center",
+      });
+    }
+  };
+
   const handleAuth = async (data) => {
     try {
       setError("")
       console.log(data)
       if (formState === "signIn") {
         let result = await handleLogin(data.userName, data.password)
-        setMessage(result)
-        setOpen(true)
+        notify("success",result)
         navigate("/home")
       }
+      
       if (formState === "signUp") {
         const formData = new FormData()
         file&&formData.append("file", file)
         formData.append("fullName", data.fullName)
         formData.append("userName", data.userName)
         formData.append("password", data.password)
-        // console.log("formdata: ",formData)
+        
         let result = await handleRegister(formData)
-        setMessage(result)
-        setOpen(true)
+        notify("success",result)
         navigate("/home")
       }
 
@@ -252,14 +274,6 @@ export default function Authentication() {
               </Box>
             </Grid>
           </Grid>
-
-          {error === "" && <Snackbar
-            open={open}
-            autoHideDuration={2000}
-            onClose={() => setOpen(false)}
-            message={message}
-          />}
-
         </ThemeProvider>
 
       </div>
