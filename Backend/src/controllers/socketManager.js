@@ -18,8 +18,9 @@ export const connectToSocket = (server) => {
     io.on("connection", (socket) => {
 
         console.log("connection made on socketIo server")
+        let userName=socket.handshake.query.userName
 
-        socket.on("join-call", ({path,userName}) => {
+        socket.on("join-call", ({path}) => {
             console.log("reached join call")
             if (connections[path] === undefined) {
                 connections[path] = []
@@ -94,7 +95,7 @@ export const connectToSocket = (server) => {
                         key = k
 
                         for (let a = 0; a < connections[key].length; ++a) {
-                            io.to(connections[key][a]).emit('user-left', socket.id)
+                            io.to(connections[key][a]).emit('user-left', socket.id,userName)
                         }
 
                         let index = connections[key].indexOf(socket.id)

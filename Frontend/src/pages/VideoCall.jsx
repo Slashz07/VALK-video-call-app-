@@ -490,17 +490,18 @@ function VideoCall() {
   }
 
   const connectToSocketServer = () => {
-    socketRef.current = io.connect(server_url, { secure: false })
+    socketRef.current = io.connect(server_url, { secure: false,query:{userName:userData.userName} })
 
     socketRef.current.on("signal", messageFromServer)
 
     socketRef.current.on("connect", () => {
-      socketRef.current.emit("join-call",{path:window.location.href,userName:userData.userName})
+      socketRef.current.emit("join-call",{path:window.location.href})
       socketIdRef.current = socketRef.current.id
       socketRef.current.on("chat-message", addMessage)
 
-      socketRef.current.on("user-left", (id) => {
+      socketRef.current.on("user-left", (id,userName) => {
         console.log("user left ran")
+        notify("info",`${userName} left!`)
         setAllVideos((userVideos) => userVideos.filter((userVideo) => userVideo.socketId !== id))
       })
       const receivedTracks = {};
