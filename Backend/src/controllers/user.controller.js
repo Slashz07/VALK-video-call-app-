@@ -19,14 +19,11 @@ const generateAccessAndRefreshTokens = async (user) => {
 
 const register = wrapper(async (req, res) => {
     const { fullName, userName, password } = req.body;
-    const userImgPath = req.file.path;
+    const userImgPath = req.file?.path;
+    let userImg;
 
     if ([fullName, userName, password].some((field) => field?.trim() === "" || field === undefined)) {
         throw new apiError(400, "All fields are required to be filled")
-    }
-
-    if (!userImgPath) {
-        throw new apiError(400, "multer file upload failed")
     }
 
     const userNameTaken = await User.findOne({
@@ -36,14 +33,19 @@ const register = wrapper(async (req, res) => {
         throw new apiError(409, "This userName is already taken")
     }
 
-    const userImg = await uploadOnCloudinary(userImgPath)
+    if (userImgPath) {
+        userImg = await uploadOnCloudinary(userImgPath)
+    }
+
     console.log("userImg: ", userImg)
+
+    
     const user = await User.create({
         fullName,
         userName,
         password,
-        userImg:userImg.url,
-        userImgId:userImg.public_id
+        userImg:userImgPath?userImg.url:"",
+        userImgId:userImgPath?userImg.public_id:""
     });
 
     if (!user) {
