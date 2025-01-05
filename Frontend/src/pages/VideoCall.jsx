@@ -16,6 +16,8 @@ import { TextField, Typography, IconButton, Badge, ListItem, List, ListItemText 
 import NavigationBar from '../Utils/NavigationBar';
 import isBackendProd from '../Environment';
 import { useSelector } from 'react-redux';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const server_url = isBackendProd(true)
 
@@ -33,6 +35,27 @@ const peerConfigConnections = {
     }
   ]
 }
+
+const notify = (type, msg = "") => {
+
+  toast.dismiss();
+
+  if (type === 'inProgress') {
+      toast.info(msg != "" ? msg : 'Work in Progress...', {
+          position: "top-center",
+          autoClose: false,
+          hideProgressBar: true,
+      });
+  } else if (type === 'success') {
+      toast.success(msg != "" ? msg : 'Operation Successful!', {
+          position: "top-center",
+      });
+  } else if (type === 'error') {
+      toast.error(msg != "" ? msg : 'An error occurred!', {
+          position: "top-center",
+      });
+  }
+};
 
 function VideoCall() {
 
@@ -468,7 +491,7 @@ function VideoCall() {
     socketRef.current.on("signal", messageFromServer)
 
     socketRef.current.on("connect", () => {
-      socketRef.current.emit("join-call", window.location.href)
+      socketRef.current.emit("join-call",{path:window.location.href,userName:userData.userName})
       socketIdRef.current = socketRef.current.id
       socketRef.current.on("chat-message", addMessage)
 
@@ -479,11 +502,15 @@ function VideoCall() {
       const receivedTracks = {};
 
       // Inside the "user-joined" event
-      socketRef.current.on("user-joined", (id, users) => {
+      socketRef.current.on("user-joined", (id, users,userName) => {
+        if(id!==socketIdRef.current){
+          notify("info",`${userName} joined! `)
+        }else{
+          notify("success","successfully joined the meeting")
+        }
 
         users.forEach((socketId) => {
           connections[socketId] = new RTCPeerConnection(peerConfigConnections);
-
           connections[socketId].onicecandidate = (event) => {
             if (event.candidate !== null) {
               socketRef.current.emit("signal", socketId, JSON.stringify({ ice: event.candidate }));
