@@ -815,9 +815,11 @@ function VideoCall() {
   const connect = async () => {
     if (username !== "") {
       await getMedia()
+      setAskUsername(false)
     } else {
       let altUsername=getRandomName()
       await getMedia(altUsername)
+      setAskUsername(false)
       console.log("no username alternate ran")
     }
 
