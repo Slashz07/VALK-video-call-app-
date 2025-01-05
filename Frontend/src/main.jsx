@@ -42,7 +42,10 @@ const router = createBrowserRouter([
         path: "/call/:url",
         element: <VideoCall />
       },
-
+      {
+        path: "*",
+        element: <LandingPage />
+      },
     ]
   }
 ])

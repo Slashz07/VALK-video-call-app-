@@ -17,6 +17,9 @@ app.use(cookieParser())
 
 
 app.use("/api/v1/users",userRouter)
+app.use("*",(req,res)=>{
+    res.send("Website is live,please request a valid url")
+})
 
 
 export default app
