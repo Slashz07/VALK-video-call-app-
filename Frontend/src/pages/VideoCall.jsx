@@ -488,6 +488,16 @@ function VideoCall() {
       setUnseenMessages((unseenCount) => unseenCount + 1)
     }
   }
+  
+  function getRandomName(len=7){
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let altUsername=""
+    for(let i =0;i<len;i++){
+      let index=Math.floor(Math.random()*characters.length)
+      altUsername+=characters[index]
+    }
+    return altUsername
+  }
 
   const connectToSocketServer = (altUsername="") => {
     socketRef.current = io.connect(server_url, { secure: false,query:{userName:userData?userData.userName:(username?username:altUsername)} })
