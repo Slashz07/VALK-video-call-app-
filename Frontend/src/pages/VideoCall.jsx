@@ -46,6 +46,10 @@ const notify = (type, msg = "") => {
           autoClose: false,
           hideProgressBar: true,
       });
+  } else if (type === 'info') {
+      toast.info(msg != "" ? msg : 'Operation Successful!', {
+          position: "top-center",
+      });
   } else if (type === 'success') {
       toast.success(msg != "" ? msg : 'Operation Successful!', {
           position: "top-center",
@@ -503,11 +507,8 @@ function VideoCall() {
 
       // Inside the "user-joined" event
       socketRef.current.on("user-joined", (id, users,userName) => {
-        console.log("username: ",userName)
-        console.log("id: ",id)
-        console.log("socketIdRef: ",socketIdRef.current)
         if(id!==socketIdRef.current){
-          notify("info",`${userName} joined! `)
+          notify("info",`${userName} joined!`)
         }else{
           notify("success","successfully joined the meeting")
         }
