@@ -306,6 +306,7 @@ body {
   }
 
   .userVideoFrame{
+      aspect-ratio: 70 / 2;
     max-width: 100%;
   }
 

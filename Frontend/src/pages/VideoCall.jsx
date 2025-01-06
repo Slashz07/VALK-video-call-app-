@@ -101,16 +101,7 @@ function VideoCall() {
       const screenWidth = window.innerWidth;
 
       if (screenWidth <= 560) {
-        // Adjust sizes for smaller screens
-        if (allVideos.length === 1) {
-          setVideoSize({ maxWidth: '90%' });
-        } else if (allVideos.length === 2) {
-          setVideoSize({ maxWidth: '80%' });
-        }
-        else {
-          // setTwoUserStyle({})
-          setVideoSize({ maxWidth: '70%' });
-        }
+          setVideoSize({ maxWidth: '100%' });
       } else {
         // Default sizes for larger screens
         // setTwoUserStyle({})
