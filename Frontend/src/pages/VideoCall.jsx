@@ -103,8 +103,6 @@ function VideoCall() {
           setVideoSize({ maxWidth: '100%' });
           if (allVideos.length >4) {
             setVideoSize({ 
-              overflowY: "scroll !important",
-              maxHeight: "-webkit-fill-available !important",
               height:"49.2vh",
               width:"34vw"
              });
@@ -991,7 +989,7 @@ function VideoCall() {
                     className="userVideoFrame"
                     key={video.socketId}
                     style={{
-                      maxWidth: videoSize.maxWidth,
+                      maxWidth: videoSize?.maxWidth,
                       width: videoSize?.width,
                       height: videoSize?.height,
                     }}
