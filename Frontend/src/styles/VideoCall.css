@@ -292,6 +292,7 @@ body {
   .localUserVideo{
     height: auto;
     width: 120px;
+    bottom: 8%;
   }
 
   .userVideoFrame video{
