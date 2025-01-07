@@ -99,18 +99,34 @@ function VideoCall() {
   useEffect(() => {
     const updateVideoSize = () => {
       const screenWidth = window.innerWidth;
-
       if (screenWidth <= 560) {
           setVideoSize({ maxWidth: '100%' });
+          if (allVideos.length >4) {
+            setVideoSize({ 
+              overflowY: "scroll !important",
+              maxHeight: "-webkit-fill-available !important",
+              height:"49.2vh",
+              width:"34vw"
+             });
+          }
       } else {
         // Default sizes for larger screens
         // setTwoUserStyle({})
         if (allVideos.length === 1) {
-          setVideoSize({ maxWidth: '45%' });
+          setVideoSize({ maxWidth: '98%' });
         } else if (allVideos.length === 2) {
-          setVideoSize({ maxWidth: '35%' });
-        } else {
-          setVideoSize({ maxWidth: '30%' });
+          setVideoSize({ maxWidth: '49%',
+            height: "95vh",
+            width: "98vw"
+           });
+        }else if (allVideos.length >4) {
+          setVideoSize({ maxWidth: '49%',
+            overflowY: "scroll",
+            maxHeight: "-webkit-fill-available"
+           });
+        }
+         else {
+          setVideoSize({ maxWidth: '49%' });
         }
       }
     };
@@ -966,13 +982,18 @@ function VideoCall() {
 
             <div className="videoGrid">
               <video className="localUserVideo" ref={localVideoRef} autoPlay muted></video>
-              <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} >
+              <div className={`${allVideos.length == 2 && window.innerWidth <= 560 ? "twoUserStyle" : "userVideos"}`} style={{
+                overflowY: videoSize?.overflowY,
+                maxHeight: videoSize?.maxHeight
+              }} >
                 {allVideos.map((video) => (
                   <div
                     className="userVideoFrame"
                     key={video.socketId}
                     style={{
                       maxWidth: videoSize.maxWidth,
+                      width: videoSize?.width,
+                      height: videoSize?.height,
                     }}
                   >
                     <video

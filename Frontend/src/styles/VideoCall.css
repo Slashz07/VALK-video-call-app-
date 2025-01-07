@@ -218,7 +218,6 @@ body {
   /* Allow wrapping to new rows */
   justify-content: center;
   /* Center the videos on the screen */
-  gap: 20px;
   /* Spacing between videos */
   width: 100%;
   padding: 10px;
@@ -230,7 +229,7 @@ body {
   /* Ensure at most 2 videos fit per row */
   max-width: 45%;
   /* Prevent videos from exceeding 2 per row */
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 20 / 9.2;
   /* Maintain a consistent aspect ratio */
   position: relative;
 }
@@ -238,7 +237,6 @@ body {
 .userVideoFrame video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   /* Ensure the video fits nicely */
   border: 2px solid #ffffff;
   border-radius: 8px;
@@ -294,6 +292,10 @@ body {
   .localUserVideo{
     height: auto;
     width: 137px;
+  }
+
+  .userVideoFrame video{
+    object-fit:cover;
   }
 
   .userVideos{
