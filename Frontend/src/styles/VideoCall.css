@@ -330,6 +330,10 @@ body {
     overflow-y: scroll;
     max-height: -webkit-fill-available;
   }
+
+  .twoUserStyle{
+    height: 92vh;
+  }
  
 }
 .twoUserStyle{
