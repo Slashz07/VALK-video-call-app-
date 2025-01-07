@@ -291,7 +291,7 @@ body {
 
   .localUserVideo{
     height: auto;
-    width: 137px;
+    width: 120px;
   }
 
   .userVideoFrame video{
@@ -314,6 +314,11 @@ body {
 
   .buttonContainer{
     left: 27%;
+    bottom: 8%;
+  }
+
+  .videoGrid{
+    height: 94vh;
   }
 
   .chatRoom{
