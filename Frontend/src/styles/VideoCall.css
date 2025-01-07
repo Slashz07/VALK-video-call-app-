@@ -319,6 +319,11 @@ body {
   .chatRoom{
     width: 330px;
   }
+
+  .userVideos{
+    overflow-y: scroll;
+    max-height: -webkit-fill-available;
+  }
  
 }
 .twoUserStyle{
