@@ -20,8 +20,7 @@ const generateAccessAndRefreshTokens = async (user) => {
 const register = wrapper(async (req, res) => {
     const { fullName, userName, password } = req.body;
     const userImgPath = req.file?.path;
-    let userImg;
-
+    
     if ([fullName, userName, password].some((field) => field?.trim() === "" || field === undefined)) {
         throw new apiError(400, "All fields are required to be filled")
     }
@@ -33,12 +32,8 @@ const register = wrapper(async (req, res) => {
         throw new apiError(409, "This userName is already taken")
     }
 
-    async function getUrl () {
-        userImg = await uploadOnCloudinary(userImgPath)
-        console.log("userImage= ",userImg)
-        console.log("URL: ",userImg.url)
-        return userImg.url
-    }
+    let userImg= userImgPath?await uploadOnCloudinary(userImgPath):{url:"",public_id:""}
+    
 
     console.log("userImg: ", userImg)
 
@@ -47,8 +42,8 @@ const register = wrapper(async (req, res) => {
         fullName,
         userName,
         password,
-        userImg:userImgPath?await getUrl():"",
-        userImgId:userImgPath?userImg.public_id:""
+        userImg:userImg.url,
+        userImgId:userImg.public_id
     });
 
     if (!user) {
