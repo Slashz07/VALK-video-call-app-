@@ -33,8 +33,9 @@ const register = wrapper(async (req, res) => {
         throw new apiError(409, "This userName is already taken")
     }
 
-    if (userImgPath) {
+    async function getUrl () {
         userImg = await uploadOnCloudinary(userImgPath)
+        return userImg.url
     }
 
     console.log("userImg: ", userImg)
@@ -44,7 +45,7 @@ const register = wrapper(async (req, res) => {
         fullName,
         userName,
         password,
-        userImg:userImgPath?userImg.url:"",
+        userImg:userImgPath?await getUrl():"",
         userImgId:userImgPath?userImg.public_id:""
     });
 
