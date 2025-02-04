@@ -35,6 +35,8 @@ const register = wrapper(async (req, res) => {
 
     async function getUrl () {
         userImg = await uploadOnCloudinary(userImgPath)
+        console.log("userImage= ",userImg)
+        console.log("URL: ",userImg.url)
         return userImg.url
     }
 
